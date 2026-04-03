@@ -10,3 +10,6 @@ Route::get('/inscription', function(){
     return view('inscription');
 })->name('inscription');
 
+Route::get('/connexion', function(){
+    return view('connexion');
+})->name('connexion');
