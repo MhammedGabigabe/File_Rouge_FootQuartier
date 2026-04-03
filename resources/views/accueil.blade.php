@@ -179,7 +179,7 @@
                 </div>
             </div>
         </section>
-        
+
         <section class="py-16 bg-gray-50">
             <div class="max-w-6xl mx-auto px-6">
 
@@ -195,7 +195,8 @@
 
                         <div class="mt-4">
                             <div class="w-10 h-10 bg-white/20 rounded flex items-center justify-center mb-4">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                                    viewBox="0 0 24 24">
                                     <circle cx="11" cy="11" r="8" />
                                     <path d="M21 21l-4.35-4.35" />
                                 </svg>
@@ -212,7 +213,8 @@
 
                         <div class="mt-4">
                             <div class="w-10 h-10 bg-emerald-100 rounded flex items-center justify-center mb-4">
-                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
                                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
                                     <line x1="16" y1="2" x2="16" y2="6" />
                                     <line x1="8" y1="2" x2="8" y2="6" />
@@ -231,7 +233,8 @@
 
                         <div class="mt-4">
                             <div class="w-10 h-10 bg-emerald-100 rounded flex items-center justify-center mb-4">
-                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor"
+                                    stroke-width="2" viewBox="0 0 24 24">
                                     <circle cx="12" cy="12" r="10" />
                                     <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
                                     <path d="M2 12h20" />
@@ -248,13 +251,13 @@
 
                 <div class="text-center mt-10">
                     <a href="{{ route('inscription') }}"
-                    class="bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700">
+                        class="bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700">
                         Commencer maintenant
                     </a>
                 </div>
 
             </div>
-            
+
         </section>
 
         <section class="py-16 bg-emerald-600 text-white text-center">
@@ -268,29 +271,27 @@
     </main>
 
     <footer class="bg-gray-100 py-10">
-        <div class="max-w-6xl mx-auto grid md:grid-cols-4 gap-6 p-6">
-            <div>
-                <a href="{{ route('accueil') }}">
-                    <h3 class="font-bold mb-2">FootQuartier</h3>
-                </a>
-                <p class="text-sm">Plateforme de réservation de terrains.</p>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-2">Plateforme</h4>
-                <ul class="text-sm space-y-2">
-                    <li><a href="#apropos">À propos</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-2">Légal</h4>
-                <ul class="text-sm space-y-2">
-                    <li><a href="#">Conditions</a></li>
-                    <li><a href="#">Confidentialité</a></li>
-                </ul>
-            </div>
-            <div>
-                <h4 class="font-semibold mb-2">Contact</h4>
-                <p class="text-sm">contact@footquartier.com</p>
+        <div class="max-w-6xl mx-auto p-6">
+            <div class="flex flex-col md:flex-row justify-between gap-6">
+                <div>
+                    <a href="{{ route('accueil') }}">
+                        <h3 class="font-bold mb-2">FootQuartier</h3>
+                    </a>
+                    <p class="text-sm">Plateforme de réservation de terrains.</p>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold mb-2">Plateforme</h4>
+                    <ul class="text-sm space-y-2">
+                        <li><a href="#apropos">À propos</a></li>
+                    </ul>
+                </div>
+
+                <div>
+                    <h4 class="font-semibold mb-2">Contact</h4>
+                    <p class="text-sm">contact@footquartier.com</p>
+                </div>
+
             </div>
         </div>
         <p class="text-center text-xs mt-6">© 2026 FootQuartier</p>
