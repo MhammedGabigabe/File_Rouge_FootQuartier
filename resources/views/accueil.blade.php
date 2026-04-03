@@ -89,7 +89,7 @@
                 <a href="#apropos" class="text-emerald-600 font-semibold">À propos</a>
             </div>
             <div class="flex gap-3">
-                <a href="#" class="px-4 py-2 text-sm">Se connecter</a>
+                <a href="{{route('connexion')}}" class="px-4 py-2 text-sm">Se connecter</a>
                 <a href="{{ route('inscription') }}" class="px-4 py-2 bg-emerald-600 text-white rounded">S'inscrire</a>
             </div>
         </div>
@@ -111,7 +111,7 @@
                     <div class="flex gap-4">
                         <a href="{{ route('inscription') }}"
                             class="bg-emerald-600 text-white px-6 py-3 rounded">S'inscrire</a>
-                        <a href="#" class="bg-gray-300 px-6 py-3 rounded">Se connecter</a>
+                        <a href="{{route('connexion')}}" class="bg-gray-300 px-6 py-3 rounded">Se connecter</a>
                     </div>
                 </div>
                 <div class="flex justify-center">
