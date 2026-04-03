@@ -50,7 +50,7 @@
 
             <p class="text-center text-gray-500 mt-6 text-sm">
                 Déjà un compte ?
-                <a href="#" class="text-emerald-600 font-semibold hover:underline">Se connecter</a>
+                <a href="{{route('connexion')}}" class="text-emerald-600 font-semibold hover:underline">Se connecter</a>
             </p>
         </div>
 
