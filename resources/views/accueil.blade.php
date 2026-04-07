@@ -84,7 +84,7 @@
                 <h1 class="text-xl font-bold text-emerald-700">FootQuartier</h1>
             </a>
             <div class="hidden md:flex gap-6 text-sm">
-                <a href="#">Terrains</a>
+                <a href="{{route('terrains')}}">Terrains</a>
                 <a href="#">Tournois</a>
                 <a href="#apropos" class="text-emerald-600 font-semibold">À propos</a>
             </div>
@@ -100,9 +100,9 @@
         <section class="min-h-screen flex items-center bg-gray-100">
             <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-10 p-6 items-center">
                 <div>
-                    <h1 class="text-4xl md:text-6xl font-bold text-emerald-700 mb-6">
+                    <h1 class="text-3xl md:text-5xl font-bold text-emerald-700 mb-6">
                         Votre Ville,<br>Votre Match. <br>
-                        <span class="text-3xl text-emerald-600">Réservez en quelques secondes.</span>
+                        <span class="text-2xl text-emerald-600">Réservez en quelques secondes.</span>
                     </h1>
                     <p class="text-lg text-gray-600 max-w-lg mb-6">
                         Rejoignez la première plateforme pour les passionnés de football.
@@ -180,6 +180,77 @@
             </div>
         </section>
 
+        <section class="py-20 bg-white">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-10 items-center">
+
+                    <div>
+
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">
+                            Devenir <span class="text-emerald-600">Membre</span> FootQuartier
+                        </h2>
+
+                        <p class="text-gray-600 mb-6">
+                            Ce compte permet de jouer avec d'autres personnes, réserver des terrains
+                            facilement et participer aux tournois.
+                        </p>
+
+                        <div class="flex gap-4">
+                            <a href="{{ route('terrains') }}"
+                                class="bg-emerald-600 text-white px-6 py-2 rounded">
+                                Voir les terrains
+                            </a>
+
+                            <a href="#"
+                                class="border border-emerald-600 text-emerald-600 px-6 py-2 rounded">
+                                Tournois
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Image -->
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop"
+                            alt="terrain"
+                            class="rounded-lg w-full h-80 object-cover">
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <section class="py-20 bg-gray-50">
+            <div class="max-w-6xl mx-auto px-6">
+                <div class="grid md:grid-cols-2 gap-10 items-center">
+
+                    <div>
+                        <img src="https://images.unsplash.com/photo-1556761175-b413da4baf72?q=80&w=1000&auto=format&fit=crop"
+                            alt="gerant"
+                            class="rounded-lg w-full h-80 object-cover">
+                    </div>
+
+                    <div>
+
+                        <h2 class="text-3xl font-bold text-gray-800 mb-4">
+                            Devenir <span class="text-emerald-600">Modérateur</span>
+                        </h2>
+
+                        <p class="text-gray-600 mb-6">
+                            Ce compte est destiné aux gérants de terrains. Il permet de gérer les terrains, 
+                            les réservations et d’organiser des tournois facilement.
+                        </p>
+
+                        <a href="#"
+                            class="bg-gray-800 text-white px-6 py-2 rounded">
+                            Gérer mes terrains
+                        </a>
+
+                    </div>
+
+                </div>
+            </div>
+        </section>
+        
         <section class="py-16 bg-gray-50">
             <div class="max-w-6xl mx-auto px-6">
 
@@ -190,82 +261,72 @@
 
                 <div class="grid md:grid-cols-3 gap-6">
 
-                    <div class="bg-emerald-600 text-white p-6 rounded-xl shadow">
-                        <p class="text-5xl font-bold text-emerald-200 text-right">1</p>
+                    <a href="#" >
+                        <div class="bg-emerald-600 text-white p-6 rounded-xl shadow">
+                            <p class="text-5xl font-bold text-emerald-200 text-right">1</p>
 
-                        <div class="mt-4">
-                            <div class="w-10 h-10 bg-white/20 rounded flex items-center justify-center mb-4">
-                                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2"
-                                    viewBox="0 0 24 24">
-                                    <circle cx="11" cy="11" r="8" />
-                                    <path d="M21 21l-4.35-4.35" />
-                                </svg>
+                            <div class="mt-4">
+                                <div class="w-10 h-10 bg-white/20 rounded flex items-center justify-center mb-4">
+                                    <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" stroke-width="2"
+                                        viewBox="0 0 24 24">
+                                        <circle cx="11" cy="11" r="8" />
+                                        <path d="M21 21l-4.35-4.35" />
+                                    </svg>
+                                </div>
+                                <h3 class="font-bold text-lg mb-1">Trouver un terrain</h3>
+                                <p class="text-sm text-emerald-100">
+                                    Cherchez parmi les terrains disponibles près de chez vous.
+                                </p>
                             </div>
-                            <h3 class="font-bold text-lg mb-1">Trouver un terrain</h3>
-                            <p class="text-sm text-emerald-100">
-                                Cherchez parmi les terrains disponibles près de chez vous.
-                            </p>
                         </div>
-                    </div>
-
-                    <div class="bg-white border p-6 rounded-xl shadow">
-                        <p class="text-5xl font-bold text-gray-200 text-right">2</p>
-
-                        <div class="mt-4">
-                            <div class="w-10 h-10 bg-emerald-100 rounded flex items-center justify-center mb-4">
-                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor"
-                                    stroke-width="2" viewBox="0 0 24 24">
-                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
-                                    <line x1="16" y1="2" x2="16" y2="6" />
-                                    <line x1="8" y1="2" x2="8" y2="6" />
-                                    <line x1="3" y1="10" x2="21" y2="10" />
-                                </svg>
-                            </div>
-                            <h3 class="font-bold text-lg mb-1 text-gray-800">Réserver</h3>
-                            <p class="text-sm text-gray-500">
-                                Choisissez votre créneau et confirmez rapidement.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="bg-white border p-6 rounded-xl shadow">
-                        <p class="text-5xl font-bold text-gray-200 text-right">3</p>
-
-                        <div class="mt-4">
-                            <div class="w-10 h-10 bg-emerald-100 rounded flex items-center justify-center mb-4">
-                                <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor"
-                                    stroke-width="2" viewBox="0 0 24 24">
-                                    <circle cx="12" cy="12" r="10" />
-                                    <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20" />
-                                    <path d="M2 12h20" />
-                                </svg>
-                            </div>
-                            <h3 class="font-bold text-lg mb-1 text-gray-800">Jouer</h3>
-                            <p class="text-sm text-gray-500">
-                                Rendez-vous au terrain et profitez du match.
-                            </p>
-                        </div>
-                    </div>
-
-                </div>
-
-                <div class="text-center mt-10">
-                    <a href="{{ route('inscription') }}"
-                        class="bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700">
-                        Commencer maintenant
                     </a>
+
+                    <a href="#" >
+                        <div class="bg-white border p-6 rounded-xl shadow">
+                            <p class="text-5xl font-bold text-gray-200 text-right">2</p>
+
+                            <div class="mt-4">
+                                <div class="w-10 h-10 bg-emerald-100 rounded flex items-center justify-center mb-4">
+                                    <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor"
+                                        stroke-width="2" viewBox="0 0 24 24">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                        <line x1="16" y1="2" x2="16" y2="6" />
+                                        <line x1="8" y1="2" x2="8" y2="6" />
+                                        <line x1="3" y1="10" x2="21" y2="10" />
+                                    </svg>
+                                </div>
+                                <h3 class="font-bold text-lg mb-1 text-gray-800">Réserver</h3>
+                                <p class="text-sm text-gray-500">
+                                    Choisissez votre créneau et confirmez rapidement.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a href="#" >
+                        <div class="bg-white border p-6 rounded-xl shadow">
+                            <p class="text-5xl font-bold text-gray-200 text-right">3</p>
+
+                            <div class="mt-4">
+                                <div class="w-10 h-10 bg-emerald-100 rounded flex items-center justify-center mb-4">
+                                    <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor"
+                                        stroke-width="2" viewBox="0 0 24 24">
+                                        <circle cx="12" cy="16" r="3" />
+                                        <path d="M8 7V3M16 7V3M3 11h18M5 7h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2z"/>
+                                    </svg>
+                                </div>
+                                <h3 class="font-bold text-lg mb-1 text-gray-800">Participer à un tournoi</h3>
+                                <p class="text-sm text-gray-500">
+                                    Inscrivez-vous à un tournoi et affrontez d'autres équipes.
+                                </p>
+                            </div>
+                        </div>
+                    </a>
+
                 </div>
 
             </div>
 
-        </section>
-
-        <section class="py-16 bg-emerald-600 text-white text-center">
-            <h2 class="text-3xl font-bold mb-6">Prêt à jouer ?</h2>
-            <p class="mb-6">Rejoignez la plateforme maintenant</p>
-            <a href="{{ route('inscription') }}" class="bg-white text-emerald-700 px-6 py-3 rounded font-bold">
-                S'inscrire
-            </a>
         </section>
 
     </main>
@@ -294,7 +355,7 @@
 
             </div>
         </div>
-        <p class="text-center text-xs mt-6">© 2026 FootQuartier</p>
+        <p class="text-center text-xs mt-6 ml-20">© 2026 FootQuartier</p>
     </footer>
 
 </body>
