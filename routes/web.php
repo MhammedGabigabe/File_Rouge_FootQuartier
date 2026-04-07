@@ -13,3 +13,7 @@ Route::get('/inscription', function(){
 Route::get('/connexion', function(){
     return view('connexion');
 })->name('connexion');
+
+Route::get('/terrains', function(){
+    return view('terrains');
+})->name('terrains');
