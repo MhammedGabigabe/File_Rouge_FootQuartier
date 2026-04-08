@@ -13,7 +13,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('reservation_id')->constrained();
             $table->integer('note');
-            $table->check('note >= 1 AND note <= 5');
             $table->dateTime('date_avis');
             $table->text('commentaire')->nullable();
             $table->timestamps();
