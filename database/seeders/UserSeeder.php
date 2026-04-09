@@ -33,6 +33,15 @@ class UserSeeder extends Seeder
         ]);
         $mod->roles()->attach($modRole);
 
+        $mod2 = User::create([
+            'nom' => 'Moderateur2 Sport',
+            'email' => 'mod2@foot.com',
+            'password' => 'password',
+            'estApprouve' => true,
+            'estActif' => true,
+        ]);
+        $mod2->roles()->attach($modRole);
+
         $membre = User::create([
             'nom' => 'Jean Capitaine',
             'email' => 'jean@foot.com',
