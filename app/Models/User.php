@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Role;
 use App\Models\Terrain;
 use App\Models\Reservation;
+use App\Models\Notification;
 
 class User extends Authenticatable
 {
@@ -46,6 +47,11 @@ class User extends Authenticatable
     }
 
     public function reservations() {
-        return $this->hasMany(Reservation::class);
+        return $this->hasMany(Reservation::class, 'member_id');
+    }
+
+    public function mesNotifications() 
+    {
+        return $this->hasMany(Notification::class, 'user_id')->latest();
     }
 }

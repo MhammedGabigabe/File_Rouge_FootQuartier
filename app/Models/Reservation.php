@@ -13,7 +13,7 @@ use App\Models\Notification;
 class Reservation extends Model
 {
     protected $fillable = [
-        'user_id', 
+        'member_id', 
         'terrain_id', 
         'heure_debut', 
         'heure_fin', 
@@ -22,7 +22,7 @@ class Reservation extends Model
     ];
 
     public function member() {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class, 'member_id');
     }
 
     public function terrain()

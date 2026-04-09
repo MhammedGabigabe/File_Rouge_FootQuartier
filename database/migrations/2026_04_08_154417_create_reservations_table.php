@@ -16,7 +16,7 @@ return new class extends Migration
             $table->datetime('heure_debut');
             $table->datetime('heure_fin');
             $table->datetime('date_res');
-            $table->enum('statut', ['confirmee', 'annulee'])->default('confirmee');
+            $table->enum('statut', ['en_attente', 'confirmee', 'annulee'])->default('en_attente');
             $table->timestamps();
         });
     }
