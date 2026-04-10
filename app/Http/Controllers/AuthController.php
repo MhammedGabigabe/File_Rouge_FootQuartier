@@ -38,12 +38,12 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        if ($request->role == "Membre") {
-            return redirect()->route('terrains');
-        } elseif($request->role == "Moderateur") {
+        if ($user->roles->titre == "Admin") {
+            return redirect()->route('admin.dashboard');
+        } elseif ($user->roles->titre == "Moderateur") {
             return redirect()->route('attente.approbation');
         } else {
-            return redirect()->route('admin.dashboard');
+            return redirect()->route('terrains');
         }
     }
 
@@ -64,7 +64,7 @@ class AuthController extends Controller
             return redirect()->intended('/terrains');
         }
 
-        return back()->withErrors(['email' => 'Identifiants incorrects.'])->onlyInput('email');
+        return back()->withErrors(['password' => 'Identifiants incorrects.'])->onlyInput('email');
     }
 
 

@@ -28,6 +28,7 @@ class RegisterRequest extends FormRequest
             'email.required'     => "L'adresse email est obligatoire.",
             'email.unique'       => 'Cet email est déjà utilisé.',
             'password.min'       => 'Le mot de passe doit faire au moins 8 caractères.',
+            'password.required'  => 'Le mot de passe est obligatoire',
             'role.required'      => 'Veuillez choisir un rôle.',
         ];
     }

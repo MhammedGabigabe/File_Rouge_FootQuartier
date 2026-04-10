@@ -29,30 +29,45 @@
             <p class="text-lg text-white/90">Rejoignez l'élite du football amateur dans votre quartier.</p>
         </div>
 
-        <div class="p-10 flex flex-col justify-center">
-            <h2 class="text-2xl font-bold text-emerald-700 mb-4">Créez votre compte</h2>
-            <p class="text-gray-600 mb-6">Créez votre compte <span><a href="{{route('accueil')}}" class="text-emerald-600 font-semibold hover:underline">FootQuartier</a></span> et commencez à réserver vos terrains facilement.</p>
+        <div class="p-6 flex flex-col justify-center">
+            <h2 class="text-2xl font-bold text-emerald-700 mb-2">Créez votre compte</h2>
+            <p class="text-gray-600 mb-4">Créez votre compte <span><a href="{{route('accueil')}}" class="text-emerald-600 font-semibold hover:underline">FootQuartier</a></span> et commencez à réserver vos terrains facilement.</p>
 
             <form action="{{ route('inscription') }}" method="POST" class="space-y-4">
                 @csrf
-                <input type="text" name="full_name" placeholder="Nom complet"
+                <input type="text" name="full_name" placeholder="Nom complet" value="{{ old('full_name') }}"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-400 focus:outline-none">
-                <input type="email" name="email" placeholder="Email"
+                @error('full_name')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror    
+
+                <input type="email" name="email" placeholder="Email" value="{{ old('email') }}"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                @error('email')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
+
                 <input type="password" name="password" placeholder="Mot de passe"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                @error('password')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
+                
                 <select name="role"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-emerald-400 focus:outline-none">
-                    
-                    <option value="" disabled selected>Choisir votre rôle</option>
-                    @if (\App\Models\User::count() == 0)
-                        <option value="Admin">Admin</option>
-                    @else
-                        <option value="Membre">Membre</option>
-                        <option value="Moderateur">Modérateur</option>    
-                    @endif
 
+                    <option value="" disabled {{ old('role') ? '' : 'selected' }}>Choisir votre rôle</option>
+
+                    @if (\App\Models\User::count() == 0)
+                        <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
+                    @else
+                        <option value="Membre" {{ old('role') == 'Membre' ? 'selected' : '' }}>Membre</option>
+                        <option value="Moderateur" {{ old('role') == 'Moderateur' ? 'selected' : '' }}>Modérateur</option>
+                    @endif
                 </select>
+                @error('role')
+                    <p class="text-red-500 text-sm">{{ $message }}</p>
+                @enderror
                 <button type="submit"
                     class="w-full py-3 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition-colors">
                     S'inscrire
