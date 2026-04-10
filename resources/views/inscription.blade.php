@@ -41,7 +41,14 @@
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-400 focus:outline-none">
                 <input type="password" name="password" placeholder="Mot de passe"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                <select name="role"
+                    class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                    
+                    <option value="" disabled selected>Choisir votre rôle</option>
+                    <option value="Membre">Membre</option>
+                    <option value="Moderateur">Modérateur</option>
 
+                </select>
                 <button type="submit"
                     class="w-full py-3 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition-colors">
                     S'inscrire
