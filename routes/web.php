@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AdminController;
 
 Route::middleware('guest')->group(function () {
     Route::get('/inscription', [AuthController::class, 'showInscription'])->name('inscription');
@@ -18,9 +19,7 @@ Route::get('/attente-approbation', [AuthController::class, 'showAttente'])
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/adminDashboard', function () {
-    return view('adminDashboard');
-})->middleware(['auth', 'isAdmin'])->name('admin.dashboard');
+Route::get('/adminDashboard', [AdminController::class, 'dashboard'])->middleware(['auth', 'isAdmin'])->name('admin.dashboard');
 
 Route::get('/login', function () {
     return redirect()->route('connexion');
