@@ -25,7 +25,7 @@
     </style>
 </head>
 
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-50 text-gray-800 min-h-screen">
 
     <nav class="bg-white shadow">
         <div class="max-w-6xl mx-auto flex justify-between items-center p-4">
@@ -44,30 +44,30 @@
         </div>
     </nav>
 
-    <main class="max-w-6xl mx-auto p-6 mt-6">
+    <main class="max-w-6xl mx-auto p-6">
 
-        <div class="grid md:grid-cols-4 gap-6 mb-10">
+        <div class="grid md:grid-cols-4 gap-6 mb-4">
 
-            <div class="bg-white p-6 rounded-xl shadow">
+            <div class="bg-white p-2 rounded-xl shadow">
                 <p class="text-gray-500 text-sm">Terrains</p>
                 <h2 class="text-3xl font-bold text-emerald-600">{{ $terrainsCount }}</h2>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow">
+            <div class="bg-white p-2 rounded-xl shadow">
                 <p class="text-gray-500 text-sm">Tournois</p>
                 <h2 class="text-3xl font-bold text-emerald-600">
                     ##
                 </h2>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow">
+            <div class="bg-white p-2 rounded-xl shadow">
                 <p class="text-gray-500 text-sm">Membres</p>
                 <h2 class="text-3xl font-bold text-emerald-600">
                     {{ $membersCount }}
                 </h2>
             </div>
 
-            <div class="bg-white p-6 rounded-xl shadow">
+            <div class="bg-white p-2 rounded-xl shadow">
                 <p class="text-gray-500 text-sm">Modérateurs</p>
                 <h2 class="text-3xl font-bold text-emerald-600">
                     {{ $moderatorsCount }}
@@ -76,7 +76,7 @@
 
         </div>
 
-        <div class="bg-white p-4 rounded-xl shadow mb-6">
+        <div class="bg-white p-4 rounded-xl shadow mb-4">
 
             <form method="GET" class="grid md:grid-cols-3 gap-4">
 
@@ -101,9 +101,9 @@
 
         </div>
 
-        <div class="bg-white rounded-xl shadow p-6">
+        <div class="bg-white rounded-xl shadow p-4">
 
-            <h2 class="text-xl font-bold mb-4">Liste des utilisateurs</h2>
+            <h2 class="text-xl font-bold mb-2">Liste des utilisateurs</h2>
 
             <table class="w-full text-sm text-left">
 
@@ -163,6 +163,9 @@
 
             </table>
 
+            <div class="mt-4">
+                {{ $users->links() }}
+            </div>
         </div>
 
     </main>
