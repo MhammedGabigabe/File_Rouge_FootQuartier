@@ -13,7 +13,7 @@ class AdminController extends Controller
     {
         $users = User::whereDoesntHave('roles', function ($query) {
             $query->where('titre', 'Admin');
-        })->with('roles')->get();
+        })->with('roles')->paginate(4);
 
         $membersCount = User::whereHas('roles', function ($q) {
             $q->where('titre', 'Membre');
