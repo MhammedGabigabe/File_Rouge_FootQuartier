@@ -28,15 +28,22 @@ class AuthController extends Controller
             'password'     => Hash::make($request->password),
         ]);
 
-        $role = Role::where('titre', $request->role)->first();
+        if (User::count() == 1) {
+            $role = Role::where('titre', 'Admin')->first();
+        } else {
+            $role = Role::where('titre', $request->role)->first();
+        }
+
         $user->roles()->attach($role->id);
 
         Auth::login($user);
 
         if ($request->role == "Membre") {
             return redirect()->route('terrains');
-        } else {
+        } elseif($request->role == "Moderateur") {
             return redirect()->route('attente.approbation');
+        } else {
+            return redirect()->route('admin.dashboard');
         }
     }
 
@@ -48,6 +55,10 @@ class AuthController extends Controller
 
             if (!$user->estApprouve && $user->roles()->where('titre', 'Moderateur')->exists()) {
                 return redirect()->route('attente.approbation');
+            }
+
+            if ($user->roles()->where('titre', 'Admin')->exists()) {
+                return redirect()->route('admin.dashboard');
             }
 
             return redirect()->intended('/terrains');

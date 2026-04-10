@@ -45,8 +45,12 @@
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-emerald-400 focus:outline-none">
                     
                     <option value="" disabled selected>Choisir votre rôle</option>
-                    <option value="Membre">Membre</option>
-                    <option value="Moderateur">Modérateur</option>
+                    @if (\App\Models\User::count() == 0)
+                        <option value="Admin">Admin</option>
+                    @else
+                        <option value="Membre">Membre</option>
+                        <option value="Moderateur">Modérateur</option>    
+                    @endif
 
                 </select>
                 <button type="submit"

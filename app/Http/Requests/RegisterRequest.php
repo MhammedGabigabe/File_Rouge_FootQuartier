@@ -17,7 +17,7 @@ class RegisterRequest extends FormRequest
             'full_name' => 'required|string|max:255',
             'email'     => 'required|string|email|max:255|unique:users',
             'password'  => 'required|string|min:8',
-            'role'      => 'required|in:Membre,Moderateur',
+            'role'      => 'required|in:Admin,Membre,Moderateur',
         ];
     }
 
