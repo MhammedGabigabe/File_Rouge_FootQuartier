@@ -18,6 +18,14 @@ Route::get('/attente-approbation', [AuthController::class, 'showAttente'])
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
+Route::get('/adminDashboard', function () {
+    return view('adminDashboard');
+})->middleware(['auth', 'isAdmin'])->name('admin.dashboard');
+
+Route::get('/login', function () {
+    return redirect()->route('connexion');
+})->name('login');
+
 Route::get('/terrains', function(){ return view('terrains'); })->name('terrains');
 
 
