@@ -130,32 +130,35 @@
                         </span>
                     </td>
 
-                <td class="flex gap-2 py-2">
+                    <td class="flex items-center gap-3 py-2">
+                        @if($user->roles->contains('titre', 'Moderateur'))
+                            
+                            @if($user->estApprouve == 0)
+                                <form action="{{ route('admin.user.approve', $user->id) }}" method="POST" onsubmit="return confirm('Approuver ce modérateur ?')">
+                                    @csrf
+                                    <button type="submit" class="text-emerald-600 font-bold hover:underline">
+                                        Approuver
+                                    </button>
+                                </form>
+                            
+                            @else
+                                <form action="{{ route('admin.user.toggle', $user->id) }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="{{ $user->estActif ? 'text-red-600' : 'text-emerald-600' }} font-bold hover:underline">
+                                        {{ $user->estActif ? 'Bannir' : 'Débannir' }}
+                                    </button>
+                                </form>
+                            @endif
 
-                @if($user->roles->contains('titre', 'Moderateur'))
-
-                    @if($user->estApprouve == 0)
-                        <a href="#" class="text-green-600">Approuver</a>
-
-                    @elseif($user->estApprouve == 1 && $user->estActif == 1)
-                        <a href="#" class="text-red-600">Bannir</a>
-
-                    @elseif($user->estApprouve == 1 && $user->estActif == 0)
-                        <a href="#" class="text-green-600">Débannir</a>
-                    @endif
-
-                @elseif($user->roles->contains('titre', 'Membre'))
-
-                    @if($user->estActif == 1)
-                        <a href="#" class="text-red-600">Bannir</a>
-                    @else
-                        <a href="#" class="text-green-600">Débannir</a>
-                    @endif
-
-                @endif
-
-                </td>
-
+                        @elseif($user->roles->contains('titre', 'Membre'))
+                            <form action="{{ route('admin.user.toggle', $user->id) }}" method="POST">
+                                @csrf
+                                <button type="submit" class="{{ $user->estActif ? 'text-red-600' : 'text-emerald-600' }} font-bold hover:underline">
+                                    {{ $user->estActif ? 'Bannir' : 'Débannir' }}
+                                </button>
+                            </form>
+                        @endif
+                    </td>
                 </tr>
                 @endforeach 
 

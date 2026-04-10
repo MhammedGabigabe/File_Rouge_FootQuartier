@@ -19,7 +19,16 @@ Route::get('/attente-approbation', [AuthController::class, 'showAttente'])
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('/adminDashboard', [AdminController::class, 'dashboard'])->middleware(['auth', 'isAdmin'])->name('admin.dashboard');
+// Route::get('/adminDashboard', [AdminController::class, 'dashboard'])
+//     ->middleware(['auth', 'isAdmin'])->name('admin.dashboard');
+
+
+Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
+    Route::get('/adminDashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::post('/user/{id}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admin.user.toggle');
+    Route::post('/user/{id}/approve', [AdminController::class, 'approve'])->name('admin.user.approve');
+});
+
 
 Route::get('/login', function () {
     return redirect()->route('connexion');

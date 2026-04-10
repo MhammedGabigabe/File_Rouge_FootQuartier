@@ -31,4 +31,22 @@ class AdminController extends Controller
 
         return view('adminDashboard', compact('users', 'membersCount', 'moderatorsCount', 'terrainsCount'));
     }
+
+    public function toggleStatus($id)
+    {
+        $user = User::findOrFail($id);
+        $user->estActif = !$user->estActif;
+        $user->save();
+
+        return back();
+    }
+
+    public function approve($id)
+    {
+        $user = User::findOrFail($id);
+        $user->estApprouve = 1;
+        $user->save();
+
+        return back();
+    }
 }

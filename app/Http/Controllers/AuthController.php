@@ -38,9 +38,9 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        if ($user->roles->titre == "Admin") {
+        if ($request->role == "Admin") {
             return redirect()->route('admin.dashboard');
-        } elseif ($user->roles->titre == "Moderateur") {
+        } elseif ($request->role == "Moderateur") {
             return redirect()->route('attente.approbation');
         } else {
             return redirect()->route('terrains');
