@@ -38,14 +38,6 @@
                 <input type="password" name="password" placeholder="Mot de passe"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-400 focus:outline-none">
 
-                <div class="flex items-center justify-between text-sm">
-                    <label class="flex items-center gap-2 text-gray-500 cursor-pointer">
-                        <input type="checkbox" name="remember" class="accent-emerald-600">
-                        Se souvenir de moi
-                    </label>
-                    <a href="#" class="text-emerald-600 font-semibold hover:underline">Mot de passe oublié ?</a>
-                </div>
-
                 <button type="submit"
                     class="w-full py-3 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-700 transition-colors">
                     Se connecter

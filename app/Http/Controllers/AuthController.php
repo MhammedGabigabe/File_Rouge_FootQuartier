@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Role;
 use App\Http\Requests\RegisterRequest;
+use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
@@ -12,6 +13,11 @@ class AuthController extends Controller
 {
     public function showInscription() {
         return view('inscription');
+    }
+
+    public function showConnexion()
+    {
+        return view('connexion');
     }
 
     public function register(RegisterRequest $request)
@@ -34,7 +40,22 @@ class AuthController extends Controller
         }
     }
 
-    
+    public function login(LoginRequest $request)
+    {
+        if (Auth::attempt($request->only('email', 'password'))) {
+            $request->session()->regenerate();
+            $user = Auth::user();
+
+            if (!$user->estApprouve && $user->roles()->where('titre', 'Moderateur')->exists()) {
+                return redirect()->route('attente.approbation');
+            }
+
+            return redirect()->intended('/terrains');
+        }
+
+        return back()->withErrors(['email' => 'Identifiants incorrects.'])->onlyInput('email');
+    }
+
 
     public function showAttente() {
         if (Auth::user()->estApprouve) {
