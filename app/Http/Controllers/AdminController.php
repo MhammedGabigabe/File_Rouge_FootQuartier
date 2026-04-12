@@ -29,7 +29,7 @@ class AdminController extends Controller
 
         $terrainsCount = Terrain::all()->count();
 
-        return view('adminDashboard', compact('users', 'membersCount', 'moderatorsCount', 'terrainsCount'));
+        return view('admin_dashboard', compact('users', 'membersCount', 'moderatorsCount', 'terrainsCount'));
     }
 
     public function toggleStatus($id)

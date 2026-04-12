@@ -29,20 +29,22 @@ class AuthController extends Controller
         ]);
 
         if (User::count() == 1) {
-            $role = Role::where('titre', 'Admin')->first();
-        } else {
-            $role = Role::where('titre', $request->role)->first();
+            $role = Role::where('titre', 'admin')->first();
+            $user->roles()->attach($role->id);
+            $user->update(['estApprouve' => true]);
+            Auth::login($user);
+            return redirect()->route('admin.dashboard');
         }
 
+        $role = Role::where('titre', $request->role)->first();
         $user->roles()->attach($role->id);
 
         Auth::login($user);
 
-        if ($request->role == "Admin") {
-            return redirect()->route('dashboard');
-        } elseif ($request->role == "Moderateur") {
+        if ($request->role == "moderateur") {
             return redirect()->route('attente.approbation');
-        } else {
+        }else{
+            $user->update(['estApprouve' => true]);
             return redirect()->route('terrains');
         }
     }
@@ -53,12 +55,21 @@ class AuthController extends Controller
             $request->session()->regenerate();
             $user = Auth::user();
 
-            if (!$user->estApprouve && $user->roles()->where('titre', 'Moderateur')->exists()) {
+            if (!$user->estActif) {
+                Auth::logout();
+                return back()->withErrors(['password' => 'Votre compte a été banni.']);
+            }
+
+            if (!$user->estApprouve && $user->isModerateur()) {
                 return redirect()->route('attente.approbation');
             }
 
-            if ($user->roles()->where('titre', 'Admin')->exists()) {
+            if ($user->isAdmin()) {
                 return redirect()->route('admin.dashboard');
+            }
+
+            if ($user->isModerateur()) {
+                return redirect()->route('moderator.dashboard');
             }
 
             return redirect()->intended('/terrains');

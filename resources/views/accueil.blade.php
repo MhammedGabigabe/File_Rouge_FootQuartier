@@ -95,14 +95,14 @@
                 @endguest
                 @auth
 
-                    @if(Auth::user()->roles->contains('titre', 'Admin'))
+                    @if(Auth::user()->roles->contains('titre', 'admin'))
 
                         <a href="{{ route('admin.dashboard') }}"
                         class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
                             Dashboard Admin
                         </a>
 
-                    @elseif(Auth::user()->roles->contains('titre', 'Moderateur'))
+                    @elseif(Auth::user()->roles->contains('titre', 'moderateur'))
 
                         <a href="{{ route('moderator.dashboard') }}"
                         class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">

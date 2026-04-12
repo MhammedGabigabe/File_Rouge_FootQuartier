@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Models\User;
 
 class RegisterRequest extends FormRequest
 {
@@ -17,7 +18,7 @@ class RegisterRequest extends FormRequest
             'full_name' => 'required|string|max:255',
             'email'     => 'required|string|email|max:255|unique:users',
             'password'  => 'required|string|min:8',
-            'role'      => 'required|in:Admin,Membre,Moderateur',
+            'role'      => User::count() == 0 ? 'nullable' : 'required|in:joueur,moderateur',
         ];
     }
 

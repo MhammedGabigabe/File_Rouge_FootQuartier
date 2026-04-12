@@ -52,19 +52,16 @@
                 @error('password')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                 @enderror
-                
+                @if (\App\Models\User::count() > 1)
                 <select name="role"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-emerald-400 focus:outline-none">
 
-                    <option value="" disabled {{ old('role') ? '' : 'selected' }}>Choisir votre rôle</option>
-
-                    @if (\App\Models\User::count() == 0)
-                        <option value="Admin" {{ old('role') == 'Admin' ? 'selected' : '' }}>Admin</option>
-                    @else
-                        <option value="Membre" {{ old('role') == 'Membre' ? 'selected' : '' }}>Membre</option>
-                        <option value="Moderateur" {{ old('role') == 'Moderateur' ? 'selected' : '' }}>Modérateur</option>
-                    @endif
+                        <option value="" disabled {{ old('role') ? '' : 'selected' }}>Choisir votre rôle</option>
+                        <option value="joueur" {{ old('role') == 'joueur' ? 'selected' : '' }}>Joueur</option>
+                        <option value="moderateur" {{ old('role') == 'moderateur' ? 'selected' : '' }}>Modérateur</option>
+                    
                 </select>
+                @endif
                 @error('role')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                 @enderror
