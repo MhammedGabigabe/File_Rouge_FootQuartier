@@ -10,14 +10,10 @@ class RoleSeeder extends Seeder
 {
     public function run(): void
     {
-        $roles = [
-            ['titre' => 'Admin'],
-            ['titre' => 'Moderateur'],
-            ['titre' => 'Membre'],
-        ];
-
-        foreach ($roles as $role) {
-            Role::updateOrCreate(['titre' => $role['titre']], $role);
+        $roles = ['admin', 'moderateur', 'joueur'];
+ 
+        foreach ($roles as $titre) {
+            Role::firstOrCreate(['titre' => $titre]);
         }
     }
 }
