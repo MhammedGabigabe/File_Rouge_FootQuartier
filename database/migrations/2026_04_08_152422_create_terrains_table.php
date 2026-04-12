@@ -11,13 +11,16 @@ return new class extends Migration
     {
         Schema::create('terrains', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('moderateur_id')->constrained('users');
+            $table->foreignId('moderateur_id')->constrained('users')->cascadeOnDelete();
             $table->string('nom_terrain');
             $table->string('localisation');
+            $table->decimal('latitude', 10, 7);
+            $table->decimal('longitude', 10, 7);
             $table->decimal('prix',8,2);
-            $table->text('description_terr');
-            $table->string('photo');
+            $table->text('description_terr')->nullable();
+            $table->string('photo')->nullable();
             $table->integer('capacite');
+            $table->enum('statut', ['actif', 'inactif'])->default('actif');
             $table->timestamps();
         });
     }

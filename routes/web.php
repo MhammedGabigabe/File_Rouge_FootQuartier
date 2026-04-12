@@ -24,7 +24,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 
 Route::middleware(['auth', 'isAdmin'])->prefix('admin')->group(function () {
-    Route::get('/adminDashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+    Route::get('/search', [AdminController::class, 'search'])->name('admin.user.search');
     Route::post('/user/{id}/toggle-status', [AdminController::class, 'toggleStatus'])->name('admin.user.toggle');
     Route::post('/user/{id}/approve', [AdminController::class, 'approve'])->name('admin.user.approve');
 });

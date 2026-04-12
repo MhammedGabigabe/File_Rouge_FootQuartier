@@ -49,4 +49,44 @@ class AdminController extends Controller
 
         return back();
     }
+
+    public function search(Request $request)
+    {
+        $query = User::with('roles')
+            ->whereDoesntHave('roles', function ($q) {
+                $q->where('titre', 'Admin');
+            });
+
+        if ($request->search) {
+            $query->where(function ($q) use ($request) {
+                $q->where('nom', 'like', '%' . $request->search . '%')
+                ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->role) {
+            $query->whereHas('roles', function ($q) use ($request) {
+                $q->where('titre', $request->role);
+            });
+        }
+
+        $users = $query->paginate(4)->withQueryString();
+
+        // 5. On doit recalculer les compteurs pour que la vue adminDashboard ne plante pas
+        $membersCount = User::whereHas('roles', function ($q) {
+            $q->where('titre', 'Membre');
+        })
+        ->whereDoesntHave('roles', function ($q) {
+            $q->where('titre', 'Moderateur');
+        })->count();
+
+        $moderatorsCount = User::whereHas('roles', function ($q) {
+            $q->where('titre', 'Moderateur');
+        })->count();
+
+        $terrainsCount = Terrain::count();
+
+        // On retourne la même vue avec les résultats filtrés
+        return view('adminDashboard', compact('users', 'membersCount', 'moderatorsCount', 'terrainsCount'));
+    }
 }

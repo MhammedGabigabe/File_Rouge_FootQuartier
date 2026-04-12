@@ -94,18 +94,38 @@
                     <a href="{{ route('inscription') }}" class="px-4 py-2 bg-emerald-600 text-white rounded">S'inscrire</a>
                 @endguest
                 @auth
-                    <div class="flex items-center gap-4">
-                        <span class="text-sm font-medium text-gray-700">
-                            Salut, <span class="text-emerald-600">{{ Auth::user()->nom }}</span>
-                        </span>
-                        
-                        <form action="{{ route('logout') }}" method="POST" class="inline">
-                            @csrf
-                            <button type="submit" class="px-4 py-2 text-sm text-red-600 font-semibold hover:bg-red-50 rounded-lg transition">
-                                Déconnexion
-                            </button>
-                        </form>
-                    </div>
+
+                    @if(Auth::user()->roles->contains('titre', 'Admin'))
+
+                        <a href="{{ route('admin.dashboard') }}"
+                        class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
+                            Dashboard Admin
+                        </a>
+
+                    @elseif(Auth::user()->roles->contains('titre', 'Moderateur'))
+
+                        <a href="{{ route('moderator.dashboard') }}"
+                        class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            Dashboard Modérateur
+                        </a>
+
+                    @else
+
+                        <div class="flex items-center gap-4">
+                            <span class="text-sm font-medium text-gray-700">
+                                Salut, <span class="text-emerald-600">{{ Auth::user()->nom }}</span>
+                            </span>
+
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <button class="px-4 py-2 text-sm text-red-600 font-semibold hover:bg-red-50 rounded-lg">
+                                    Déconnexion
+                                </button>
+                            </form>
+                        </div>
+
+                    @endif
+
                 @endauth
             </div>
         </div>

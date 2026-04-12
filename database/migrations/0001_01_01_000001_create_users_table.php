@@ -14,6 +14,10 @@ return new class extends Migration
             $table->string('nom');
             $table->string('email')->unique();
             $table->string('password');
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
+            $table->decimal('pointsCompte', 10, 2)->default(0);
+            $table->string('stripe_id')->nullable();
             $table->boolean('estApprouve')->default(false);
             $table->boolean('estActif')->default(true);
             $table->timestamps();
