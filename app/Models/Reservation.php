@@ -5,24 +5,34 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use App\Models\Terrain;
-use App\Models\Avis;
-use App\Models\Paiement;
-use App\Models\Notification;
+use App\Models\Annonce;
+use App\Models\Transaction;
+use Carbon\Carbon;
 
 
 class Reservation extends Model
 {
     protected $fillable = [
-        'member_id', 
-        'terrain_id', 
-        'heure_debut', 
-        'heure_fin', 
+        'user_id', 
+        'terrain_id',
+        'date_debut', 
+        'date_fin',
+        'montant', 
+        'stripe_payment_id',
+        'statut', 
         'date_res', 
-        'statut'
+        'rappel_envoye',
     ];
 
-    public function member() {
-        return $this->belongsTo(User::class, 'member_id');
+    protected $casts = [
+        'date_debut'    => 'datetime',
+        'date_fin'      => 'datetime',
+        'date_res'      => 'datetime',
+        'rappel_envoye' => 'boolean',
+    ];
+
+    public function user() {
+        return $this->belongsTo(User::class);
     }
 
     public function terrain()
@@ -30,17 +40,27 @@ class Reservation extends Model
         return $this->belongsTo(Terrain::class);
     }
 
-    public function avis()
+    public function annonce()
     {
-        return $this->hasOne(Avis::class);
+        return $this->hasOne(Annonce::class);
     }
 
-    public function paiement()
+    public function transaction()
     {
-        return $this->hasOne(Paiement::class);
+        return $this->morphOne(Transaction::class, 'transactionnable');
     }
 
-    public function notifications() {
-        return $this->morphMany(Notification::class, 'source');
+    public function peutPublierAnnonce(): bool
+    {
+        return $this->statut === 'confirmee'
+            && $this->annonce === null
+            && Carbon::now()->diffInHours($this->date_debut, false) > 4;
+    }
+
+    public function scopeARappeler($query)
+    {
+        return $query->where('statut', 'confirmee')
+            ->where('rappel_envoye', false)
+            ->where('date_debut', '<=', Carbon::now()->addHours(2));
     }
 }

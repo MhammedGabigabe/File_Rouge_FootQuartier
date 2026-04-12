@@ -11,7 +11,7 @@ class Equipement extends Model
     use HasFactory;
     protected $fillable = [
         'nom',
-        'description_equip',
+        'descr_equipement',
     ];
 
     public function terrains() {
