@@ -4,11 +4,19 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ModerateurController;
+use App\Http\Controllers\AccueilController;
+use App\Http\Controllers\AnnonceController;
+use App\Http\Controllers\TerrainController;
 
 
-Route::get('/accueil', function () { return view('accueil'); })->name('accueil');
+Route::get('/accueil', [AccueilController::class, 'index'])->name('accueil');
 Route::get('/', fn() => redirect()->route('accueil'));
 Route::get('/terrains', function(){ return view('terrains'); })->name('terrains');
+
+Route::get('/annonces', fn() => view('annonces'))->name('annonces');
+Route::get('/annonces/{id}', [AnnonceController::class, 'show'])->name('annonces.show');
+
+Route::get('/terrains/{id}', [TerrainController::class, 'show'])->name('terrains.show');
 
 Route::get('/login', function () { return redirect()->route('connexion'); })->name('login');
 

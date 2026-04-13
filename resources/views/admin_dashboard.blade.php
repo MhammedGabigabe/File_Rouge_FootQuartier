@@ -67,7 +67,7 @@
 
         <main class="max-w-6xl mx-auto p-6">
 
-            <div class="grid md:grid-cols-4 gap-6 mb-6">
+            <div class="grid md:grid-cols-3 gap-6 mb-6">
 
                 <div class="bg-white p-2 rounded-xl shadow">
                     <p class="text-gray-500 text-sm">Terrains</p>
@@ -75,16 +75,9 @@
                 </div>
 
                 <div class="bg-white p-2 rounded-xl shadow">
-                    <p class="text-gray-500 text-sm">Tournois</p>
-                    <h2 class="text-3xl font-bold text-emerald-600">
-                        ##
-                    </h2>
-                </div>
-
-                <div class="bg-white p-2 rounded-xl shadow">
                     <p class="text-gray-500 text-sm">Membres</p>
                     <h2 class="text-3xl font-bold text-emerald-600">
-                        {{ $membersCount }}
+                        {{ $joueursCount }}
                     </h2>
                 </div>
 
@@ -109,8 +102,8 @@
                         class="w-full px-4 py-2 border rounded-lg bg-white focus:ring-2 focus:ring-emerald-400">
 
                         <option value="">Tous les rôles</option>
-                        <option value="Membre">Membre</option>
-                        <option value="Moderateur">Modérateur</option>
+                        <option value="joueur" {{ request('role') == 'joueur' ? 'selected' : '' }}>Joueur</option>
+                        <option value="moderateur" {{ request('role') == 'moderateur' ? 'selected' : '' }}>Modérateur</option>
 
                     </select>
 
@@ -152,7 +145,7 @@
                                 </td>
 
                                 <td class="flex items-center gap-3 py-2">
-                                    @if ($user->roles->contains('titre', 'Moderateur'))
+                                    @if ($user->roles->contains('titre', 'moderateur'))
                                         @if ($user->estApprouve == 0)
                                             <form action="{{ route('admin.user.approve', $user->id) }}" method="POST"
                                                 onsubmit="return confirm('Approuver ce modérateur ?')">
@@ -171,7 +164,7 @@
                                                 </button>
                                             </form>
                                         @endif
-                                    @elseif($user->roles->contains('titre', 'Membre'))
+                                    @elseif($user->roles->contains('titre', 'joueur'))
                                         <form action="{{ route('admin.user.toggle', $user->id) }}" method="POST">
                                             @csrf
                                             <button type="submit"

@@ -12,24 +12,24 @@ class AdminController extends Controller
     public function dashboard()
     {
         $users = User::whereDoesntHave('roles', function ($query) {
-            $query->where('titre', 'Admin');
+            $query->where('titre', 'admin');
         })->with('roles')->paginate(4);
 
-        $membersCount = User::whereHas('roles', function ($q) {
-            $q->where('titre', 'Membre');
+        $joueursCount = User::whereHas('roles', function ($q) {
+            $q->where('titre', 'joueur');
         })
         ->whereDoesntHave('roles', function ($q) {
-            $q->where('titre', 'Moderateur');
+            $q->where('titre', 'moderateur');
         })
         ->count();
 
         $moderatorsCount = User::whereHas('roles', function ($q) {
-            $q->where('titre', 'Moderateur');
+            $q->where('titre', 'moderateur');
         })->count();
 
-        $terrainsCount = Terrain::all()->count();
+        $terrainsCount = Terrain::count();
 
-        return view('admin_dashboard', compact('users', 'membersCount', 'moderatorsCount', 'terrainsCount'));
+        return view('admin_dashboard', compact('users', 'joueursCount', 'moderatorsCount', 'terrainsCount'));
     }
 
     public function toggleStatus($id)
@@ -44,7 +44,7 @@ class AdminController extends Controller
     public function approve($id)
     {
         $user = User::findOrFail($id);
-        $user->estApprouve = 1;
+        $user->estApprouve = true;
         $user->save();
 
         return back();
@@ -54,7 +54,7 @@ class AdminController extends Controller
     {
         $query = User::with('roles')
             ->whereDoesntHave('roles', function ($q) {
-                $q->where('titre', 'Admin');
+                $q->where('titre', 'admin');
             });
 
         if ($request->search) {
@@ -72,21 +72,19 @@ class AdminController extends Controller
 
         $users = $query->paginate(4)->withQueryString();
 
-        // 5. On doit recalculer les compteurs pour que la vue adminDashboard ne plante pas
-        $membersCount = User::whereHas('roles', function ($q) {
-            $q->where('titre', 'Membre');
+        $joueursCount = User::whereHas('roles', function ($q) {
+            $q->where('titre', 'joueur');
         })
         ->whereDoesntHave('roles', function ($q) {
-            $q->where('titre', 'Moderateur');
+            $q->where('titre', 'moderateur');
         })->count();
 
         $moderatorsCount = User::whereHas('roles', function ($q) {
-            $q->where('titre', 'Moderateur');
+            $q->where('titre', 'moderateur');
         })->count();
 
         $terrainsCount = Terrain::count();
 
-        // On retourne la même vue avec les résultats filtrés
-        return view('adminDashboard', compact('users', 'membersCount', 'moderatorsCount', 'terrainsCount'));
+        return view('admin_dashboard', compact('users', 'joueursCount', 'moderatorsCount', 'terrainsCount'));
     }
 }
