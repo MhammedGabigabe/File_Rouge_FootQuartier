@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
 use App\Models\Reservation;
 use App\Models\Avis;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Terrain;
+use App\Models\Equipement;
+use Illuminate\Support\Facades\Storage;
 
 class ModerateurController extends Controller
 {
@@ -51,4 +53,19 @@ class ModerateurController extends Controller
             'noteMoyenne', 'dernieresReservations', 'derniersAvis'
         ));
     }
+
+    public function index()
+    {
+        $terrains = Auth::user()
+            ->terrains()
+            ->with('equipements')
+            ->latest()
+            ->get();
+
+        $equipements = Equipement::all();
+
+        return view('moderateur_terrains', compact('terrains', 'equipements'));
+    }
+
+
 }
