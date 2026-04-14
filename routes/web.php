@@ -7,26 +7,23 @@ use App\Http\Controllers\ModerateurController;
 use App\Http\Controllers\AccueilController;
 use App\Http\Controllers\AnnonceController;
 use App\Http\Controllers\TerrainController;
+use App\Http\Controllers\JoueurController;
 
 
-Route::get('/accueil', [AccueilController::class, 'index'])->name('accueil');
-Route::get('/', fn() => redirect()->route('accueil'));
+Route::middleware('guest.custom')->group(function () {
+    Route::get('/accueil', [AccueilController::class, 'index'])->name('accueil');
+    Route::get('/register', [AuthController::class, 'showInscription'])->name('inscription');
+    Route::post('/register', [AuthController::class, 'register']);
+
+    Route::get('/login', [AuthController::class, 'showConnexion'])->name('login');
+    Route::post('/login', [AuthController::class, 'login']);
+});
+
 Route::get('/terrains', function(){ return view('terrains'); })->name('terrains');
-
 Route::get('/annonces', fn() => view('annonces'))->name('annonces');
 Route::get('/annonces/{id}', [AnnonceController::class, 'show'])->name('annonces.show');
 
 Route::get('/terrains/{id}', [TerrainController::class, 'show'])->name('terrains.show');
-
-Route::get('/login', function () { return redirect()->route('connexion'); })->name('login');
-
-Route::middleware('guest')->group(function () {
-    Route::get('/inscription', [AuthController::class, 'showInscription'])->name('inscription');
-    Route::post('/inscription', [AuthController::class, 'register']);
-
-    Route::get('/connexion', [AuthController::class, 'showConnexion'])->name('connexion');
-    Route::post('/connexion', [AuthController::class, 'login']);
-});
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -47,5 +44,28 @@ Route::middleware('auth')->group(function () {
     Route::middleware('isModerateur')->prefix('moderateur')->group(function () {
         Route::get('/dashboard', [ModerateurController::class, 'dashboard'])
             ->name('moderator.dashboard');
+        Route::get('/terrains', [ModerateurController::class, 'terrains'])
+            ->name('moderateur.terrains.index');
+        Route::get('/terrains/create', [ModerateurController::class, 'createTerrain'])
+            ->name('moderateur.terrains.create');
+        Route::get('/reservations', [ModerateurController::class, 'reservations'])
+            ->name('moderateur.reservations');
+        Route::get('/blocages', [ModerateurController::class, 'blocages'])
+            ->name('moderateur.blocages');
+        Route::get('/avis', [ModerateurController::class, 'avis'])
+            ->name('moderateur.avis');
+        Route::get('/paiements', [ModerateurController::class, 'paiements'])
+            ->name('moderateur.paiements');
     });
+
+    Route::middleware('isJoueur')->prefix('joueur')->group(function () {
+        Route::get('/dashboard', [JoueurController::class, 'dashboard'])->name('joueur.dashboard');
+        Route::get('/reservations', [JoueurController::class, 'reservations'])->name('joueur.reservations');
+        Route::get('/participations', [JoueurController::class, 'participations'])->name('joueur.participations');
+        Route::get('/points', [JoueurController::class, 'points'])->name('joueur.points');
+        Route::get('/historique', [JoueurController::class, 'historique'])->name('joueur.historique');
+        Route::get('/notifications', [JoueurController::class, 'notifications'])->name('joueur.notifications');
+    });
+
 });
+
