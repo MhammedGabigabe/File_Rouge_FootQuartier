@@ -116,37 +116,16 @@
                     Tableau de bord
                 </a>
 
-                <div>
-                    <button onclick="toggleTerrains()"
-                        class="nav-link w-full {{ request()->routeIs('moderateur.terrains*') ? 'active' : '' }}">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                        Mes terrains
-                        <svg id="chevron-terrains"
-                            class="w-3.5 h-3.5 chevron {{ request()->routeIs('moderateur.terrains*') ? 'open' : '' }}"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
-
-                    <div id="submenu-terrains"
-                        class="submenu {{ request()->routeIs('moderateur.terrains*') ? 'open' : '' }}">
-                        <a href="{{ route('moderateur.terrains.index') }}"
-                            class="sub-link {{ request()->routeIs('moderateur.terrains.index') ? 'active' : '' }}">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></span>
-                            Liste des terrains
-                        </a>
-                        <a href="{{ route('moderateur.terrains.create') }}"
-                            class="sub-link {{ request()->routeIs('moderateur.terrains.create') ? 'active' : '' }}">
-                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0"></span>
-                            Ajouter un terrain
-                        </a>
-                    </div>
-                </div>
+                <a href="##"
+                    class="nav-link w-full {{ request()->routeIs('moderateur.terrains*') ? 'active' : '' }}">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    Mes terrains
+                </a>
 
                 <a href="{{ route('moderateur.reservations') }}"
                     class="nav-link {{ request()->routeIs('moderateur.reservations') ? 'active' : '' }}">
@@ -185,8 +164,7 @@
                 </a>
 
                 <div>
-                    <a href="{{ route('joueur.dashboard') }}"
-                        class="nav-link w-full">
+                    <a href="{{ route('joueur.dashboard') }}" class="nav-link w-full">
                         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -235,7 +213,7 @@
                 <div class="stat-card bg-white rounded-2xl shadow p-5 border border-gray-100">
                     <p class="text-sm text-gray-500 mb-1">Avis clients</p>
                     <p class="text-3xl font-bold text-emerald-600">{{ $avisCount }}</p>
-                    <p class="text-xs text-gray-400 mt-1">Note moy. {{ $noteMoyenne }}/5</p>
+                    <p class="text-xs text-gray-400 mt-1">Note moy. {{ number_format($noteMoyenne, 1) }}/5</p>
                 </div>
             </div>
 
@@ -254,7 +232,7 @@
                                 <p class="font-semibold text-sm">{{ $reservation->user->nom }}</p>
                                 <p class="text-xs text-gray-500">{{ $reservation->terrain->nom_terrain }}</p>
                                 <p class="text-xs text-gray-400">
-                                    📅 {{ $reservation->date_debut->format('d/m/Y H:i') }}
+                                    {{ $reservation->date_debut->format('d/m/Y H:i') }}
                                 </p>
                             </div>
                             <div class="text-right">
@@ -309,13 +287,6 @@
 
         </main>
     </div>
-
-    <script>
-        function toggleTerrains() {
-            document.getElementById('submenu-terrains').classList.toggle('open');
-            document.getElementById('chevron-terrains').classList.toggle('open');
-        }
-    </script>
 
 </body>
 
