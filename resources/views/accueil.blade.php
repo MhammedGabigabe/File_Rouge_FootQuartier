@@ -104,52 +104,21 @@
             </a>
 
             <div class="hidden md:flex gap-8 text-sm">
-                <a href="{{ route('accueil') }}" class="nav-link active">Accueil</a>
-                <a href="#terrains" class="nav-link">Terrains</a>
-                <a href="#matchs" class="nav-link">Matchs</a>
-                <a href="#apropos" class="nav-link">À propos</a>
+                <a href="{{ route('accueil') }}" class="nav-link active" id="link-accueil">Accueil</a>
+                <a href="#terrains" class="nav-link" id="link-terrains">Terrains</a>
+                <a href="#matchs" class="nav-link" id="link-matchs">Matchs</a>
+                <a href="#apropos" class="nav-link" id="link-apropos">À propos</a>
             </div>
 
             <div class="flex gap-3 items-center">
-                @guest
-                    <a href="{{ route('connexion') }}"
-                        class="px-4 py-2 text-sm text-gray-700 hover:text-emerald-600 font-medium transition">
-                        Se connecter
-                    </a>
-                    <a href="{{ route('inscription') }}"
-                        class="px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition font-medium">
-                        S'inscrire
-                    </a>
-                @endguest
-
-                @auth
-                    @if (Auth::user()->roles->contains('titre', 'admin'))
-                        <a href="{{ route('admin.dashboard') }}"
-                            class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium">
-                            Dashboard Admin
-                        </a>
-                    @elseif(Auth::user()->roles->contains('titre', 'moderateur'))
-                        <a href="{{ route('moderator.dashboard') }}"
-                            class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium">
-                            Dashboard Modérateur
-                        </a>
-                    @else
-                        <span class="text-sm text-gray-600">
-                            Salut, <span class="text-emerald-600 font-semibold">{{ Auth::user()->nom }}</span>
-                        </span>
-                        <a href="{{ route('terrains') }}"
-                            class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium">
-                            Réserver
-                        </a>
-                        <form action="{{ route('logout') }}" method="POST">
-                            @csrf
-                            <button
-                                class="px-4 py-2 text-sm text-red-500 font-medium hover:bg-red-50 rounded-lg transition">
-                                Déconnexion
-                            </button>
-                        </form>
-                    @endif
-                @endauth
+                <a href="{{ route('login') }}"
+                    class="px-4 py-2 text-sm text-gray-700 hover:text-emerald-600 font-medium transition">
+                    Se connecter
+                </a>
+                <a href="{{ route('inscription') }}"
+                    class="px-4 py-2 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition font-medium">
+                    S'inscrire
+                </a>
             </div>
 
         </div>
@@ -169,26 +138,14 @@
                         Réservez des terrains, participez à des matchs annoncés.
                     </p>
                     <div class="flex gap-4 flex-wrap">
-                        @guest
-                            <a href="{{ route('inscription') }}"
-                                class="bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition">
-                                S'inscrire
-                            </a>
-                            <a href="{{ route('connexion') }}"
-                                class="bg-white border border-gray-300 px-6 py-3 rounded-lg font-medium hover:border-emerald-400 transition">
-                                Se connecter
-                            </a>
-                        @endguest
-                        @auth
-                            <a href="{{ route('terrains') }}"
-                                class="bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition">
-                                Réserver un terrain
-                            </a>
-                            <a href="{{ route('annonces') }}"
-                                class="bg-white border border-gray-300 px-6 py-3 rounded-lg font-medium hover:border-emerald-400 transition">
-                                Voir les matchs
-                            </a>
-                        @endauth
+                        <a href="{{ route('inscription') }}"
+                            class="bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition">
+                            S'inscrire
+                        </a>
+                        <a href="{{ route('login') }}"
+                            class="bg-white border border-gray-300 px-6 py-3 rounded-lg font-medium hover:border-emerald-400 transition">
+                            Se connecter
+                        </a>
                     </div>
                 </div>
                 <div class="flex justify-center">
@@ -211,17 +168,12 @@
                 <div class="grid md:grid-cols-3 gap-6">
                     @forelse($terrains as $terrain)
                         <div class="terrain-card bg-white rounded-2xl shadow overflow-hidden border border-gray-100">
-                            @if ($terrain->photo)
-                                <img src="{{ asset('storage/' . $terrain->photo) }}" alt="{{ $terrain->nom_terrain }}"
-                                    class="w-full h-44 object-cover">
-                            @else
-                                <div class="w-full h-44 bg-emerald-50 flex items-center justify-center">
-                                    <span class="text-emerald-300 text-4xl">⚽</span>
-                                </div>
-                            @endif
+                            <img src="{{ asset('storage/' . $terrain->photo) }}" alt="{{ $terrain->nom_terrain }}"
+                                class="w-full h-44 object-cover">
+
                             <div class="p-4">
                                 <h3 class="font-bold text-lg mb-1">{{ $terrain->nom_terrain }}</h3>
-                                <p class="text-sm text-gray-500 mb-2">📍 {{ $terrain->localisation }}</p>
+                                <p class="text-sm text-gray-500 mb-2">{{ $terrain->localisation }}</p>
                                 <div class="flex justify-between items-center">
                                     <span class="text-emerald-600 font-bold">{{ $terrain->prix }} DH</span>
                                     <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full">
@@ -261,13 +213,13 @@
                                 </span>
                             </div>
                             <p class="text-sm text-gray-500 mb-1">
-                                📍 {{ $annonce->reservation->terrain->localisation }}
+                                {{ $annonce->reservation->terrain->localisation }}
                             </p>
                             <p class="text-sm text-gray-500 mb-1">
-                                📅 {{ $annonce->reservation->date_debut->format('d/m/Y H:i') }}
+                                {{ $annonce->reservation->date_debut->format('d/m/Y H:i') }}
                             </p>
                             <p class="text-sm text-gray-500 mb-4">
-                                👤 Organisé par {{ $annonce->organisateur->nom }}
+                                Organisé par {{ $annonce->organisateur->nom }}
                             </p>
                             <a href="{{ route('annonces.show', $annonce->id) }}"
                                 class="block text-center bg-emerald-600 text-white py-2 rounded-lg text-sm hover:bg-emerald-700 transition">
@@ -327,16 +279,15 @@
                             </div>
                         </div>
 
-                        @guest
-                            <a href="{{ route('inscription') }}"
-                                class="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors">
-                                Rejoindre la communauté
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5"
-                                    viewBox="0 0 24 24">
-                                    <path d="M5 12h14M12 5l7 7-7 7" />
-                                </svg>
-                            </a>
-                        @endguest
+                        <a href="{{ route('inscription') }}"
+                            class="inline-flex items-center gap-2 bg-emerald-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-emerald-700 transition-colors">
+                            Rejoindre la communauté
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5"
+                                viewBox="0 0 24 24">
+                                <path d="M5 12h14M12 5l7 7-7 7" />
+                            </svg>
+                        </a>
+
                     </div>
 
                 </div>
@@ -354,12 +305,11 @@
                             Ce compte permet de réserver des terrains, participer aux matchs
                             annoncés et interagir avec la communauté.
                         </p>
-                        @guest
-                            <a href="{{ route('inscription') }}"
-                                class="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition">
-                                S'inscrire comme joueur
-                            </a>
-                        @endguest
+                        <a href="{{ route('inscription') }}"
+                            class="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition">
+                            S'inscrire comme joueur
+                        </a>
+
                     </div>
                     <div>
                         <img src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=1000&auto=format&fit=crop"
@@ -380,12 +330,10 @@
                             Ce compte est destiné aux gérants de terrains. Il permet de gérer les terrains,
                             les réservations et de maintenir le respect dans votre complexe.
                         </p>
-                        @guest
-                            <a href="{{ route('inscription') }}"
-                                class="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition">
-                                S'inscrire comme modérateur
-                            </a>
-                        @endguest
+                        <a href="{{ route('inscription') }}"
+                            class="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition">
+                            S'inscrire comme modérateur
+                        </a>
                     </div>
                 </div>
             </div>
@@ -421,6 +369,37 @@
         <p class="text-center text-xs text-gray-400 mt-6">© 2026 FootQuartier</p>
     </footer>
 
+    <script>
+        const links = document.querySelectorAll('.nav-link');
+
+        function setActive(id) {
+            links.forEach(link => link.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        document.getElementById('link-accueil').onclick = () => setActive('link-accueil');
+        document.getElementById('link-terrains').onclick = () => setActive('link-terrains');
+        document.getElementById('link-matchs').onclick = () => setActive('link-matchs');
+        document.getElementById('link-apropos').onclick = () => setActive('link-apropos');
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.scrollY;
+
+            const terrains = document.getElementById('terrains').offsetTop - 100;
+            const matchs = document.getElementById('matchs').offsetTop - 100;
+            const apropos = document.getElementById('apropos').offsetTop - 100;
+
+            if (scrollY >= apropos) {
+                setActive('link-apropos');
+            } else if (scrollY >= matchs) {
+                setActive('link-matchs');
+            } else if (scrollY >= terrains) {
+                setActive('link-terrains');
+            } else {
+                setActive('link-accueil');
+            }
+        });
+    </script>
 </body>
 
 </html>
