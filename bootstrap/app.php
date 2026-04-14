@@ -5,6 +5,8 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Middleware\IsModerateur;
+use App\Http\Middleware\isJoueur;
+use App\Http\Middleware\RedirigerSiAuthentifie;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -16,6 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'isAdmin' => IsAdmin::class,
             'isModerateur' => IsModerateur::class,
+            'guest.custom' => RedirigerSiAuthentifie::class,
+            'isJoueur' => IsJoueur::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
