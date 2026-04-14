@@ -105,6 +105,7 @@
         <div>
             <div class="p-6 border-b">
                 <h1 class="text-xl font-bold text-emerald-700">FootQuartier</h1>
+                <p class="text-xs text-gray-400 mt-1">Espace Admin</p>
             </div>
 
             <nav class="p-4 space-y-2">
@@ -118,36 +119,16 @@
                     Tableau de bord
                 </a>
 
-                <div>
-                    <button onclick="toggleJoueur()"
-                        class="nav-link w-full {{ request()->routeIs('joueur.*') ? 'active' : '' }}">
-                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        Espace joueur
-                        <svg id="chevron-joueur"
-                            class="w-3.5 h-3.5 chevron {{ request()->routeIs('joueur.*') ? 'open' : '' }}"
-                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                        </svg>
-                    </button>
 
-                    <div id="submenu-joueur" class="submenu {{ request()->routeIs('joueur.*') ? 'open' : '' }}">
-                        <a href="{{ route('terrains') }}" class="sub-link">
-                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0"></span>
-                            Réserver un terrain
-                        </a>
-                        <a href="{{ route('annonces') }}" class="sub-link">
-                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0"></span>
-                            Trouver un match
-                        </a>
-                        <a href="{{ route('joueur.points') }}" class="sub-link">
-                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0"></span>
-                            Mes points
-                        </a>
-                    </div>
-                </div>
+                <a href="{{ route('joueur.dashboard')}}"
+                    class="nav-link w-full">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                    Espace joueur
+                </a>
+
 
             </nav>
         </div>
@@ -260,8 +241,7 @@
                                                 </button>
                                             </form>
                                         @else
-                                            <form action="{{ route('admin.user.toggle', $user->id) }}"
-                                                method="POST">
+                                            <form action="{{ route('admin.user.toggle', $user->id) }}" method="POST">
                                                 @csrf
                                                 <button type="submit"
                                                     class="{{ $user->estActif ? 'text-red-600' : 'text-emerald-600' }} font-bold hover:underline">
@@ -294,12 +274,6 @@
         </main>
     </div>
 
-    <script>
-        function toggleJoueur() {
-            document.getElementById('submenu-joueur').classList.toggle('open');
-            document.getElementById('chevron-joueur').classList.toggle('open');
-        }
-    </script>
 </body>
 
 </html>
