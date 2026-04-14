@@ -45,7 +45,7 @@ class AuthController extends Controller
             return redirect()->route('attente.approbation');
         }else{
             $user->update(['estApprouve' => true]);
-            return redirect()->route('terrains');
+            return redirect()->route('joueur.dashboard');
         }
     }
 
@@ -72,7 +72,7 @@ class AuthController extends Controller
                 return redirect()->route('moderator.dashboard');
             }
 
-            return redirect()->intended('/terrains');
+            return redirect()->intended(route('joueur.dashboard'));
         }
 
         return back()->withErrors(['password' => 'Identifiants incorrects.'])->onlyInput('email');
