@@ -8,7 +8,9 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
 
     <style>
         body {
@@ -32,34 +34,29 @@
             </a>
 
             <div class="hidden md:flex gap-6 text-sm">
-                <a href="{{route('terrains')}}" class="text-emerald-600 font-semibold">Terrains</a>
+                <a href="{{ route('terrains') }}" class="text-emerald-600 font-semibold">Terrains</a>
                 <a href="#">Tournois</a>
-                <a href="{{route('accueil')}}#apropos">À propos</a>
+                <a href="{{ route('accueil') }}#apropos">À propos</a>
             </div>
 
             <div class="flex gap-3">
                 @guest
-                    <a href="{{route('connexion')}}" class="px-4 py-2 text-sm">Se connecter</a>
+                    <a href="{{ route('login') }}" class="px-4 py-2 text-sm">Se connecter</a>
                     <a href="{{ route('inscription') }}" class="px-4 py-2 bg-emerald-600 text-white rounded">S'inscrire</a>
                 @endguest
                 @auth
 
-                    @if(Auth::user()->roles->contains('titre', 'Admin'))
-
+                    @if (Auth::user()->roles->contains('titre', 'Admin'))
                         <a href="{{ route('admin.dashboard') }}"
-                        class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
+                            class="px-4 py-2 text-sm bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition">
                             Dashboard Admin
                         </a>
-
                     @elseif(Auth::user()->roles->contains('titre', 'Moderateur'))
-
                         <a href="{{ route('moderator.dashboard') }}"
-                        class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                            class="px-4 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
                             Dashboard Modérateur
                         </a>
-
                     @else
-
                         <div class="flex items-center gap-4">
                             <span class="text-sm font-medium text-gray-700">
                                 Salut, <span class="text-emerald-600">{{ Auth::user()->nom }}</span>
@@ -72,7 +69,6 @@
                                 </button>
                             </form>
                         </div>
-
                     @endif
 
                 @endauth
@@ -87,16 +83,14 @@
                 Découvrez les meilleurs terrains de votre ville
             </h1>
             <p class="text-sm text-gray-500">
-                Réservez en quelques clics les terrains les plus prestigieux de votre quartier pour vos matchs entre amis ou vos entraînements intensifs.
+                Réservez en quelques clics les terrains les plus prestigieux de votre quartier pour vos matchs entre
+                amis ou vos entraînements intensifs.
             </p>
         </header>
 
         <div class="bg-white p-4 rounded-xl shadow mb-8">
-            <input 
-                type="text" 
-                placeholder="Rechercher par ville ou prix..." 
-                class="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-            >
+            <input type="text" placeholder="Rechercher par ville ou prix..."
+                class="w-full border rounded px-4 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
