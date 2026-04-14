@@ -31,7 +31,7 @@
             <h2 class="text-2xl font-bold text-emerald-700 mb-4">Connectez-vous</h2>
             <p class="text-gray-600 mb-6">Bon retour sur <span><a href="{{ route('accueil') }}" class="text-emerald-600 font-semibold hover:underline">FootQuartier</a></span>. Accédez à votre espace et reprenez le jeu.</p>
 
-            <form action="{{ route('connexion') }}" method="POST" class="space-y-4">
+            <form action="{{ route('login') }}" method="POST" class="space-y-4">
                 @csrf
                 <input type="email" name="email" placeholder="Email" value="{{ old('email') }}"
                     class="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-emerald-400 focus:outline-none">
