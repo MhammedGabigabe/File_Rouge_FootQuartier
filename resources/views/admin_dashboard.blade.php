@@ -22,6 +22,79 @@
         h3 {
             font-family: 'Lexend', sans-serif;
         }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 1rem;
+            border-radius: 0.5rem;
+            color: #374151;
+            font-size: 0.9rem;
+            transition: background 0.2s, color 0.2s;
+            cursor: pointer;
+        }
+
+        .nav-link:hover {
+            background: #f0fdf4;
+            color: #059669;
+        }
+
+        .nav-link.active {
+            background: #d1fae5;
+            color: #065f46;
+            font-weight: 600;
+        }
+
+        .sub-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 1rem 0.45rem 2.5rem;
+            border-radius: 0.5rem;
+            color: #6b7280;
+            font-size: 0.82rem;
+            transition: background 0.2s, color 0.2s;
+        }
+
+        .sub-link:hover {
+            background: #f0fdf4;
+            color: #059669;
+        }
+
+        .sub-link.active {
+            color: #065f46;
+            font-weight: 600;
+            background: #ecfdf5;
+        }
+
+        .submenu {
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            max-height: 0;
+        }
+
+        .submenu.open {
+            max-height: 300px;
+        }
+
+        .chevron {
+            transition: transform 0.3s;
+            margin-left: auto;
+        }
+
+        .chevron.open {
+            transform: rotate(180deg);
+        }
+
+        .stat-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 24px rgba(5, 150, 105, 0.1);
+        }
     </style>
 </head>
 
@@ -36,27 +109,57 @@
 
             <nav class="p-4 space-y-2">
 
-                <a href="{{ route('accueil') }}"
-                    class="flex items-center gap-3 px-4 py-2 rounded-lg 
-                {{ request()->routeIs('accueil') ? 'bg-emerald-100 text-emerald-700 font-semibold' : 'hover:bg-gray-100' }}">
-                    Accueil
+                <a href="{{ route('admin.dashboard') }}"
+                    class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                    </svg>
+                    Tableau de bord
                 </a>
 
-                <a href="{{ route('admin.dashboard') }}"
-                    class="flex items-center gap-3 px-4 py-2 rounded-lg 
-                {{ request()->routeIs('admin.*')
-                    ? 'bg-emerald-100 text-emerald-700 font-semibold'
-                    : 'hover:bg-gray-100' }}">
-                    Utilisateurs
-                </a>
+                <div>
+                    <button onclick="toggleJoueur()"
+                        class="nav-link w-full {{ request()->routeIs('joueur.*') ? 'active' : '' }}">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                        Espace joueur
+                        <svg id="chevron-joueur"
+                            class="w-3.5 h-3.5 chevron {{ request()->routeIs('joueur.*') ? 'open' : '' }}"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div id="submenu-joueur" class="submenu {{ request()->routeIs('joueur.*') ? 'open' : '' }}">
+                        <a href="{{ route('terrains') }}" class="sub-link">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0"></span>
+                            Réserver un terrain
+                        </a>
+                        <a href="{{ route('annonces') }}" class="sub-link">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0"></span>
+                            Trouver un match
+                        </a>
+                        <a href="{{ route('joueur.points') }}" class="sub-link">
+                            <span class="w-1.5 h-1.5 rounded-full bg-blue-400 flex-shrink-0"></span>
+                            Mes points
+                        </a>
+                    </div>
+                </div>
 
             </nav>
         </div>
 
-        <div class="p-4 border-t">
-            <form method="POST" action="{{ route('logout') }}">
+        <div class="p-4 border-t flex-shrink-0">
+            <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button class="w-full text-left px-4 py-2 rounded-lg text-red-600 font-semibold hover:bg-red-50">
+                <button class="w-full text-left nav-link text-red-500 hover:bg-red-50 hover:text-red-600">
+                    <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                    </svg>
                     Déconnexion
                 </button>
             </form>
@@ -103,7 +206,8 @@
 
                         <option value="">Tous les rôles</option>
                         <option value="joueur" {{ request('role') == 'joueur' ? 'selected' : '' }}>Joueur</option>
-                        <option value="moderateur" {{ request('role') == 'moderateur' ? 'selected' : '' }}>Modérateur</option>
+                        <option value="moderateur" {{ request('role') == 'moderateur' ? 'selected' : '' }}>Modérateur
+                        </option>
 
                     </select>
 
@@ -156,7 +260,8 @@
                                                 </button>
                                             </form>
                                         @else
-                                            <form action="{{ route('admin.user.toggle', $user->id) }}" method="POST">
+                                            <form action="{{ route('admin.user.toggle', $user->id) }}"
+                                                method="POST">
                                                 @csrf
                                                 <button type="submit"
                                                     class="{{ $user->estActif ? 'text-red-600' : 'text-emerald-600' }} font-bold hover:underline">
@@ -188,6 +293,13 @@
 
         </main>
     </div>
+
+    <script>
+        function toggleJoueur() {
+            document.getElementById('submenu-joueur').classList.toggle('open');
+            document.getElementById('chevron-joueur').classList.toggle('open');
+        }
+    </script>
 </body>
 
 </html>
