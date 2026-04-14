@@ -26,7 +26,7 @@ class UserSeeder extends Seeder
             'latitude'     => 31.6295,
             'longitude'    => -7.9811,
         ]);
-        $admin->roles()->attach($adminRole);
+        $admin->roles()->attach([$adminRole->id, $joueurRole->id]);
 
         $mod1 = User::create([
             'nom'          => 'Youssef Alami',
