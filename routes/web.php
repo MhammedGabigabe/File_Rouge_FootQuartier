@@ -10,6 +10,7 @@ use App\Http\Controllers\TerrainController;
 use App\Http\Controllers\JoueurController;
 
 
+Route::get('/', function() { return redirect()->route('accueil'); });
 Route::middleware('guest.custom')->group(function () {
     Route::get('/accueil', [AccueilController::class, 'index'])->name('accueil');
     Route::get('/register', [AuthController::class, 'showInscription'])->name('inscription');
@@ -44,8 +45,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('isModerateur')->prefix('moderateur')->group(function () {
         Route::get('/dashboard', [ModerateurController::class, 'dashboard'])
             ->name('moderator.dashboard');
-        Route::get('/terrains', [ModerateurController::class, 'terrains'])
-            ->name('moderateur.terrains.index');
+        Route::get('/mesterrains', [ModerateurController::class, 'index'])
+            ->name('moderateur.mesterrains.index');
         Route::get('/terrains/create', [ModerateurController::class, 'createTerrain'])
             ->name('moderateur.terrains.create');
         Route::get('/reservations', [ModerateurController::class, 'reservations'])
@@ -56,15 +57,22 @@ Route::middleware('auth')->group(function () {
             ->name('moderateur.avis');
         Route::get('/paiements', [ModerateurController::class, 'paiements'])
             ->name('moderateur.paiements');
+
     });
 
     Route::middleware('isJoueur')->prefix('joueur')->group(function () {
-        Route::get('/dashboard', [JoueurController::class, 'dashboard'])->name('joueur.dashboard');
-        Route::get('/reservations', [JoueurController::class, 'reservations'])->name('joueur.reservations');
-        Route::get('/participations', [JoueurController::class, 'participations'])->name('joueur.participations');
-        Route::get('/points', [JoueurController::class, 'points'])->name('joueur.points');
-        Route::get('/historique', [JoueurController::class, 'historique'])->name('joueur.historique');
-        Route::get('/notifications', [JoueurController::class, 'notifications'])->name('joueur.notifications');
+        Route::get('/dashboard', [JoueurController::class, 'dashboard'])
+            ->name('joueur.dashboard');
+        Route::get('/reservations', [JoueurController::class, 'reservations'])
+            ->name('joueur.reservations');
+        Route::get('/participations', [JoueurController::class, 'participations'])
+            ->name('joueur.participations');
+        Route::get('/points', [JoueurController::class, 'points'])
+            ->name('joueur.points');
+        Route::get('/historique', [JoueurController::class, 'historique'])
+            ->name('joueur.historique');
+        Route::get('/notifications', [JoueurController::class, 'notifications'])
+            ->name('joueur.notifications');
     });
 
 });
