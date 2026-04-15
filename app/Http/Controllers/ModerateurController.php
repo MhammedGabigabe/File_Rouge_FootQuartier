@@ -67,5 +67,26 @@ class ModerateurController extends Controller
         return view('moderateur_terrains', compact('terrains', 'equipements'));
     }
 
+    public function destroy($id)
+    {
+        $terrain = Terrain::where('id', $id)
+            ->where('moderateur_id', Auth::id())
+            ->firstOrFail();
+
+        if ($terrain->reservations()->where('statut', 'confirmee')
+            ->where('date_debut', '>=', now())->exists()) {
+            return redirect()->route('moderateur.mesterrains.index')
+                ->with('error', 'Impossible de supprimer un terrain avec des réservations à venir.');
+        }
+
+        if ($terrain->photo){
+            Storage::disk('public')->delete($terrain->photo);
+        } 
+        $terrain->equipements()->detach();
+        $terrain->delete();
+
+        return redirect()->route('moderateur.mesterrains.index')
+            ->with('success', 'Terrain supprimé avec succès !');
+    }
 
 }
