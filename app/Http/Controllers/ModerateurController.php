@@ -3,13 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Reservation;
 use App\Models\Avis;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Terrain;
 use App\Models\Equipement;
 use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\StoreTerrainRequest;
 
 class ModerateurController extends Controller
 {
@@ -65,6 +65,31 @@ class ModerateurController extends Controller
         $equipements = Equipement::all();
 
         return view('moderateur_terrains', compact('terrains', 'equipements'));
+    }
+
+    public function store(StoreTerrainRequest  $request)
+    {
+        $photoPath = null;
+        if ($request->hasFile('photo')) {
+            $photoPath = $request->file('photo')->store('terrains', 'public');
+        }
+
+        $terrain = Auth::user()->terrains()->create([
+            'nom_terrain'    => $request->nom_terrain,
+            'localisation'   => $request->localisation,
+            'prix'           => $request->prix,
+            'capacite'       => $request->capacite,
+            'description_terr' => $request->description_terr,
+            'photo'          => $photoPath,
+            'statut'         => 'actif',
+        ]);
+
+        if ($request->equipements) {
+            $terrain->equipements()->attach($request->equipements);
+        }
+
+        return redirect()->route('moderateur.mesterrains.index')
+            ->with('success', 'Terrain ajouté avec succès !');
     }
 
     public function destroy($id)
