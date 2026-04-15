@@ -116,7 +116,7 @@
                     Tableau de bord
                 </a>
 
-                <a href="##"
+                <a href="{{ route('moderateur.mesterrains.index') }}"
                     class="nav-link w-full {{ request()->routeIs('moderateur.terrains*') ? 'active' : '' }}">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -127,7 +127,7 @@
                     Mes terrains
                 </a>
 
-                <a href="{{ route('moderateur.reservations') }}"
+                <a href="#"
                     class="nav-link {{ request()->routeIs('moderateur.reservations') ? 'active' : '' }}">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -136,7 +136,7 @@
                     Réservations
                 </a>
 
-                <a href="{{ route('moderateur.blocages') }}"
+                <a href="#"
                     class="nav-link {{ request()->routeIs('moderateur.blocages') ? 'active' : '' }}">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -145,7 +145,7 @@
                     Joueurs bloqués
                 </a>
 
-                <a href="{{ route('moderateur.avis') }}"
+                <a href="#"
                     class="nav-link {{ request()->routeIs('moderateur.avis') ? 'active' : '' }}">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -154,7 +154,7 @@
                     Avis clients
                 </a>
 
-                <a href="{{ route('moderateur.paiements') }}"
+                <a href="#"
                     class="nav-link {{ request()->routeIs('moderateur.paiements') ? 'active' : '' }}">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -222,7 +222,7 @@
                 <div class="bg-white rounded-2xl shadow p-6 border border-gray-100">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-lg">Dernières réservations</h3>
-                        <a href="{{ route('moderateur.reservations') }}"
+                        <a href="#"
                             class="text-emerald-600 text-sm hover:underline">Voir tout →</a>
                     </div>
 
@@ -254,7 +254,7 @@
                 <div class="bg-white rounded-2xl shadow p-6 border border-gray-100">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-lg">Derniers avis</h3>
-                        <a href="{{ route('moderateur.avis') }}"
+                        <a href="#"
                             class="text-emerald-600 text-sm hover:underline">Voir tout →</a>
                     </div>
 
