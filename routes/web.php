@@ -47,17 +47,6 @@ Route::middleware('auth')->group(function () {
             ->name('moderator.dashboard');
         Route::get('/mesterrains', [ModerateurController::class, 'index'])
             ->name('moderateur.mesterrains.index');
-        Route::get('/terrains/create', [ModerateurController::class, 'createTerrain'])
-            ->name('moderateur.terrains.create');
-        Route::get('/reservations', [ModerateurController::class, 'reservations'])
-            ->name('moderateur.reservations');
-        Route::get('/blocages', [ModerateurController::class, 'blocages'])
-            ->name('moderateur.blocages');
-        Route::get('/avis', [ModerateurController::class, 'avis'])
-            ->name('moderateur.avis');
-        Route::get('/paiements', [ModerateurController::class, 'paiements'])
-            ->name('moderateur.paiements');
-
     });
 
     Route::middleware('isJoueur')->prefix('joueur')->group(function () {
