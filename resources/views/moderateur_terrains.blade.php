@@ -263,8 +263,10 @@
                                         Modifier
                                     </button>
 
-                                    <form action="#"
-                                        method="#" >
+                                    <form action="{{ route('moderateur.terrains.destroy', $terrain->id) }}"
+                                        method="POST" >
+                                        @csrf
+                                        @method('DELETE')
                                         <button type="submit"
                                             class="flex items-center justify-center gap-1.5 px-3 py-2 bg-red-50 text-red-600 rounded-lg text-sm font-medium hover:bg-red-100 transition">
                                             <svg class="w-4 h-4" fill="none" stroke="currentColor"
