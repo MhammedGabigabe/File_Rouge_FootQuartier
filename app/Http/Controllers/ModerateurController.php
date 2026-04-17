@@ -82,6 +82,8 @@ class ModerateurController extends Controller
             'description_terr' => $request->description_terr,
             'photo'          => $photoPath,
             'statut'         => 'actif',
+            'latitude'         => $request->latitude  ?: null,   
+            'longitude'        => $request->longitude ?: null,
         ]);
 
         if ($request->equipements) {
