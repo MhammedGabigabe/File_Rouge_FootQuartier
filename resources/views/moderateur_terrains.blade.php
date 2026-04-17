@@ -251,7 +251,7 @@
                                 @endif
 
                                 <div class="flex gap-2">
-                                    <button
+                                    <button onclick="openModal('modal-edit')"
                                         class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-100 transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -376,6 +376,84 @@
                     <button type="button" onclick="submitWithGeo()"
                         class="flex-1 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition">
                         Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="modal-edit" class="modal-overlay" onclick="closeOnOverlay(event, 'modal-edit')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+
+            <form id="form-edit-terrain" method="POST" enctype="multipart/form-data" class="px-6 space-y-4">
+                @csrf
+                @method('PUT')
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom du terrain</label>
+                    <input type="text" name="nom_terrain" id="edit-nom"
+                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Localisation</label>
+                    <input type="text" name="localisation" id="edit-localisation"
+                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                </div>
+
+                <input type="hidden" name="latitude" id="input-lat" value="{{ old('latitude') }}">
+                <input type="hidden" name="longitude" id="input-lng" value="{{ old('longitude') }}">
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Prix (DH)</label>
+                        <input type="number" name="prix" id="edit-prix" min="0" step="0.01"
+                            class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Capacité</label>
+                        <select name="capacite" id="edit-capacite"
+                            class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                            <option value="5">5v5</option>
+                            <option value="7">7v7</option>
+                            <option value="11">11v11</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea name="description_terr" id="edit-description" rows="2"
+                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none resize-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Équipements</label>
+                    <div class="flex flex-wrap gap-2" id="edit-equipements">
+                        @foreach ($equipements as $eq)
+                            <label class="flex items-center gap-1 text-sm cursor-pointer">
+                                <input type="checkbox" name="equipements[]" value="{{ $eq->id }}"
+                                    class="edit-eq-checkbox w-4 h-4 text-emerald-600 rounded">
+                                {{ $eq->nom }}
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+                    <input type="file" name="photo" accept="image/*"
+                        class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                </div>
+
+                <div class="flex gap-3 pb-3">
+                    <button type="button" onclick="closeModal('modal-edit')"
+                        class="flex-1 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
+                        Annuler
+                    </button>
+                    <button type="button" onclick="submitWithGeo()"
+                        class="flex-1 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition">
+                        Enregistrer
                     </button>
                 </div>
             </form>
