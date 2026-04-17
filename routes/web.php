@@ -49,6 +49,8 @@ Route::middleware('auth')->group(function () {
             ->name('moderateur.mesterrains.index');
         Route::delete('/mesterrains/{id}', [ModerateurController::class, 'destroy'])
             ->name('moderateur.terrains.destroy');
+        Route::post('/mesterrains', [ModerateurController::class, 'store'])
+            ->name('moderateur.terrains.store');    
     });
 
     Route::middleware('isJoueur')->prefix('joueur')->group(function () {
