@@ -14,8 +14,8 @@ return new class extends Migration
             $table->foreignId('moderateur_id')->constrained('users')->cascadeOnDelete();
             $table->string('nom_terrain');
             $table->string('localisation');
-            $table->decimal('latitude', 10, 7);
-            $table->decimal('longitude', 10, 7);
+            $table->decimal('latitude', 10, 7)->nullable();
+            $table->decimal('longitude', 10, 7)->nullable();
             $table->decimal('prix',8,2);
             $table->text('description_terr')->nullable();
             $table->string('photo')->nullable();
