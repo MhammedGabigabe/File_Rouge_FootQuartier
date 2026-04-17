@@ -70,7 +70,7 @@
     </style>
 </head>
 
-<body class="bg-gray-50 text-gray-800 min-h-screen flex">
+<body class="bg-gray-50 text-gray-800 min-h-screen overflow-hidden flex">
 
     <aside class="w-64 bg-white shadow-lg flex flex-col justify-between fixed h-full z-40">
         <div class="overflow-y-auto flex-1">
@@ -157,15 +157,15 @@
     </aside>
 
     <div class="flex-1 ml-64">
-        <main class="p-6">
+        <main class="p-4">
 
-            <div class="flex justify-between items-center mb-8">
+            <div class="flex justify-between items-center mb-5">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-800">Mes terrains</h2>
-                    @if ($terrains->isEmpty())
+                    @if ($terrainsCount === 0)
                         <p class="text-sm text-gray-500 mt-1"> Aucun terrain enregistré</p>
                     @else
-                        <p class="text-sm text-gray-500 mt-1">{{ $terrains->count() }} terrain(s) enregistré(s)</p>
+                        <p class="text-sm text-gray-500 mt-1">{{ $terrainsCount }} terrain(s) enregistré(s)</p>
                     @endif
                 </div>
                 <button onclick="openModal('modal-add')"
@@ -179,17 +179,17 @@
 
             @if (session('success'))
                 <div
-                    class="mb-6 px-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm">
+                    class="mb-2 px-4 py-3 bg-emerald-50 border border-emerald-200 text-emerald-700 rounded-lg text-sm">
                     {{ session('success') }}
                 </div>
             @endif
             @if (session('error'))
-                <div class="mb-6 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                <div class="mb-2 px-4 py-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
                     {{ session('error') }}
                 </div>
             @endif
 
-            @if ($terrains->isEmpty())
+            @if ($terrainsCount === 0)
                 <div class="text-center py-20">
                     <div class="w-16 h-16 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
                         <svg class="w-8 h-8 text-emerald-500" fill="none" stroke="currentColor"
@@ -207,8 +207,8 @@
                         <div class="terrain-card bg-white rounded-2xl shadow overflow-hidden border border-gray-100">
 
                             @if ($terrain->photo)
-                                <img src="{{ asset('storage/' . $terrain->photo) }}"
-                                    alt="{{ $terrain->nom_terrain }}" class="w-full h-44 object-cover">
+                                <img src="{{ asset('storage/' . $terrain->photo) }}" alt="{{ $terrain->photo }}"
+                                    class="w-full h-44 object-cover">
                             @else
                                 <div class="w-full h-44 bg-emerald-50 flex items-center justify-center">
                                     <svg class="w-12 h-12 text-emerald-200" fill="none" stroke="currentColor"
@@ -279,6 +279,9 @@
                             </div>
                         </div>
                     @endforeach
+                </div>
+                <div class="mt-6">
+                    {{ $terrains->links() }}
                 </div>
             @endif
 
