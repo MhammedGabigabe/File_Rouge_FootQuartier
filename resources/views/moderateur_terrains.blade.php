@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mes Terrains | FootQuartier</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&family=Inter:wght@400;500;600&display=swap"
         rel="stylesheet">
@@ -98,8 +100,7 @@
                     Mes terrains
                 </a>
 
-                <a href="#"
-                    class="nav-link">
+                <a href="#" class="nav-link">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -107,8 +108,7 @@
                     Réservations
                 </a>
 
-                <a href="#"
-                    class="nav-link">
+                <a href="#" class="nav-link">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
@@ -116,8 +116,7 @@
                     Joueurs bloqués
                 </a>
 
-                <a href="#"
-                    class="nav-link">
+                <a href="#" class="nav-link">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -125,8 +124,7 @@
                     Avis clients
                 </a>
 
-                <a href="#"
-                    class="nav-link">
+                <a href="#" class="nav-link">
                     <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
@@ -170,7 +168,7 @@
                         <p class="text-sm text-gray-500 mt-1">{{ $terrains->count() }} terrain(s) enregistré(s)</p>
                     @endif
                 </div>
-                <button 
+                <button onclick="openModal('modal-add')"
                     class="flex items-center gap-2 px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition font-medium text-sm">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -264,7 +262,7 @@
                                     </button>
 
                                     <form action="{{ route('moderateur.terrains.destroy', $terrain->id) }}"
-                                        method="POST" >
+                                        method="POST" onsubmit="return confirm('Supprimer ce terrain ?')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit"
@@ -286,6 +284,169 @@
 
         </main>
     </div>
+
+    <div id="modal-add" class="modal-overlay" onclick="closeOnOverlay(event, 'modal-add')">
+        <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+
+            <form id="form-add-terrain" action="{{ route('moderateur.terrains.store') }}" method="POST"
+                enctype="multipart/form-data" class="px-6 space-y-4">
+                @csrf
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Nom du terrain</label>
+                    <input type="text" name="nom_terrain" value="{{ old('nom_terrain') }}"
+                        placeholder="ex: Atlas Sport 5"
+                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                    @error('nom_terrain')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Localisation</label>
+                    <input type="text" name="localisation" value="{{ old('localisation') }}"
+                        placeholder="ex: Hay Salam, Marrakech"
+                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                    @error('localisation')
+                        <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+                <input type="hidden" name="latitude" id="input-lat" value="{{ old('latitude') }}">
+                <input type="hidden" name="longitude" id="input-lng" value="{{ old('longitude') }}">
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Prix (DH)</label>
+                        <input type="number" name="prix" value="{{ old('prix') }}" min="0"
+                            step="0.01" placeholder="200"
+                            class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                        @error('prix')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Capacité</label>
+                        <select name="capacite"
+                            class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-emerald-400 focus:outline-none">
+                            <option value="">Choisir</option>
+                            <option value="5" {{ old('capacite') == 5 ? 'selected' : '' }}>5v5</option>
+                            <option value="7" {{ old('capacite') == 7 ? 'selected' : '' }}>7v7</option>
+                            <option value="11" {{ old('capacite') == 11 ? 'selected' : '' }}>11v11</option>
+                        </select>
+                        @error('capacite')
+                            <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <textarea name="description_terr" rows="2" placeholder="Décrivez votre terrain..."
+                        class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none resize-none">{{ old('description_terr') }}</textarea>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Équipements</label>
+                    <div class="flex flex-wrap gap-2">
+                        @foreach ($equipements as $eq)
+                            <label class="flex items-center gap-1 text-sm cursor-pointer">
+                                <input type="checkbox" name="equipements[]" value="{{ $eq->id }}"
+                                    {{ in_array($eq->id, old('equipements', [])) ? 'checked' : '' }}
+                                    class="w-4 h-4 text-emerald-600 rounded">
+                                {{ $eq->nom }}
+                            </label>
+                        @endforeach
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Photo</label>
+                    <input type="file" name="photo" accept="image/*"
+                        class="w-full text-sm text-gray-500 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-sm file:bg-emerald-50 file:text-emerald-700 hover:file:bg-emerald-100">
+                </div>
+
+                <div class="flex gap-3 pb-3">
+                    <button type="button" onclick="closeModal('modal-add')"
+                        class="flex-1 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
+                        Annuler
+                    </button>
+                    <button type="button" onclick="submitWithGeo()"
+                        class="flex-1 py-2 bg-emerald-600 text-white rounded-lg text-sm font-medium hover:bg-emerald-700 transition">
+                        Ajouter
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openModal(id) {
+            document.getElementById(id).classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function closeOnOverlay(event, id) {
+            if (event.target === document.getElementById(id)) closeModal(id);
+        }
+
+
+        async function submitWithGeo() {
+            const adresse = document.querySelector('input[name="localisation"]').value.trim();
+
+            if (adresse) {
+                try {
+                    const url =
+                        `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(adresse)}&format=json&limit=1&countrycodes=ma`;
+                    const res = await fetch(url, {
+                        headers: {
+                            'Accept-Language': 'fr'
+                        }
+                    });
+                    const data = await res.json();
+
+                    if (data.length > 0) {
+                        document.getElementById('input-lat').value = parseFloat(data[0].lat);
+                        document.getElementById('input-lng').value = parseFloat(data[0].lon);
+                    } else {
+                        showGeoError('Localisation introuvable. Vérifiez l\'adresse saisie.');
+                        return;
+                    }
+                } catch (e) {
+                    showGeoError('Erreur réseau. Vérifiez votre connexion.');
+                    return;
+                }
+            }
+
+            document.getElementById('form-add-terrain').submit();
+        }
+
+        function showGeoError(message) {
+            let el = document.getElementById('geo-error');
+            if (!el) {
+                el = document.createElement('p');
+                el.id = 'geo-error';
+                el.className = 'text-red-500 text-xs mt-1';
+                document.querySelector('input[name="localisation"]').insertAdjacentElement('afterend', el);
+            }
+            el.textContent = message;
+            document.querySelector('input[name="localisation"]').classList.add('border-red-400');
+        }
+
+        document.querySelector('input[name="localisation"]').addEventListener('input', function() {
+            const el = document.getElementById('geo-error');
+            if (el) el.remove();
+            this.classList.remove('border-red-400');
+        });
+
+        @if ($errors->any() && old('_token'))
+            openModal('modal-add');
+        @endif
+    </script>
 
 </body>
 
