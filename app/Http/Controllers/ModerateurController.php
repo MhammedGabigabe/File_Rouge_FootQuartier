@@ -56,15 +56,20 @@ class ModerateurController extends Controller
 
     public function index()
     {
+
         $terrains = Auth::user()
             ->terrains()
             ->with('equipements')
             ->latest()
-            ->get();
+            ->paginate(3);
+
+        $user = Auth::user();
+
+        $terrainsCount = $user->terrains()->count();
 
         $equipements = Equipement::all();
 
-        return view('moderateur_terrains', compact('terrains', 'equipements'));
+        return view('moderateur_terrains', compact('terrains', 'equipements', 'terrainsCount'));
     }
 
     public function store(StoreTerrainRequest  $request)
