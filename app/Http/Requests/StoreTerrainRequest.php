@@ -25,6 +25,8 @@ class StoreTerrainRequest extends FormRequest
             'photo'            => 'nullable|image|max:2048',
             'equipements'      => 'nullable|array',
             'equipements.*'    => 'exists:equipements,id',
+            'latitude'  => 'nullable|numeric|between:-90,90',
+            'longitude' => 'nullable|numeric|between:-180,180',
         ];
     }
 
