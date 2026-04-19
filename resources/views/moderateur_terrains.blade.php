@@ -251,7 +251,13 @@
                                 @endif
 
                                 <div class="flex gap-2">
-                                    <button onclick="openModal('modal-edit')"
+                                    <button data-id="{{ $terrain->id }}" data-nom="{{ $terrain->nom_terrain }}"
+                                        data-localisation="{{ $terrain->localisation }}"
+                                        data-prix="{{ $terrain->prix }}" data-capacite="{{ $terrain->capacite }}"
+                                        data-description="{{ $terrain->description_terr }}"
+                                        data-equipements="{{ $terrain->equipements->pluck('id')->join(',') }}"
+                                        data-url="{{ route('moderateur.terrains.update', $terrain->id) }}"
+                                        onclick="openEditModal(this.dataset)"
                                         class="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 bg-emerald-50 text-emerald-700 rounded-lg text-sm font-medium hover:bg-emerald-100 transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor"
                                             viewBox="0 0 24 24">
@@ -401,8 +407,8 @@
                         class="w-full px-2 py-1.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-emerald-400 focus:outline-none">
                 </div>
 
-                <input type="hidden" name="latitude" id="input-lat" value="{{ old('latitude') }}">
-                <input type="hidden" name="longitude" id="input-lng" value="{{ old('longitude') }}">
+                <input type="hidden" name="latitude" id="eddit-lat">
+                <input type="hidden" name="longitude" id="eddit-lng">
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -475,9 +481,29 @@
             if (event.target === document.getElementById(id)) closeModal(id);
         }
 
+        function openEditModal(data) {
+            document.getElementById('form-edit-terrain').action = data.url;
+            document.getElementById('edit-nom').value = data.nom;
+            document.getElementById('edit-localisation').value = data.localisation;
+            document.getElementById('edit-prix').value = data.prix;
+            document.getElementById('edit-capacite').value = data.capacite;
+            document.getElementById('edit-description').value = data.description;
+
+            const ids = data.equipements ? data.equipements.split(',').map(Number) : [];
+            document.querySelectorAll('.edit-eq-checkbox').forEach(cb => {
+                cb.checked = ids.includes(parseInt(cb.value));
+            });
+
+            openModal('modal-edit');
+        }
 
         async function submitWithGeo() {
-            const adresse = document.querySelector('input[name="localisation"]').value.trim();
+            const isEdit = document.getElementById('modal-edit').classList.contains('open');
+            const form = document.getElementById(isEdit ? 'form-edit-terrain' : 'form-add-terrain');
+            const locInput = form.querySelector('input[name="localisation"]');
+            const latInput = form.querySelector('input[name="latitude"]');
+            const lngInput = form.querySelector('input[name="longitude"]');
+            const adresse = locInput.value.trim();
 
             if (adresse) {
                 try {
@@ -491,31 +517,30 @@
                     const data = await res.json();
 
                     if (data.length > 0) {
-                        document.getElementById('input-lat').value = parseFloat(data[0].lat);
-                        document.getElementById('input-lng').value = parseFloat(data[0].lon);
+                        latInput.value = parseFloat(data[0].lat);
+                        lngInput.value = parseFloat(data[0].lon);
                     } else {
-                        showGeoError('Localisation introuvable. Vérifiez l\'adresse saisie.');
+                        showGeoError(locInput, 'Localisation introuvable. Vérifiez l\'adresse saisie.');
                         return;
                     }
                 } catch (e) {
-                    showGeoError('Erreur réseau. Vérifiez votre connexion.');
+                    showGeoError(locInput, 'Erreur réseau. Vérifiez votre connexion.');
                     return;
                 }
             }
 
-            document.getElementById('form-add-terrain').submit();
+            form.submit();
         }
 
-        function showGeoError(message) {
-            let el = document.getElementById('geo-error');
+        function showGeoError(inputEl, message) {
+            let el = inputEl.parentElement.querySelector('.geo-error');
             if (!el) {
                 el = document.createElement('p');
-                el.id = 'geo-error';
-                el.className = 'text-red-500 text-xs mt-1';
-                document.querySelector('input[name="localisation"]').insertAdjacentElement('afterend', el);
+                el.className = 'geo-error text-red-500 text-xs mt-1';
+                inputEl.insertAdjacentElement('afterend', el);
             }
             el.textContent = message;
-            document.querySelector('input[name="localisation"]').classList.add('border-red-400');
+            inputEl.classList.add('border-red-400');
         }
 
         document.querySelector('input[name="localisation"]').addEventListener('input', function() {
