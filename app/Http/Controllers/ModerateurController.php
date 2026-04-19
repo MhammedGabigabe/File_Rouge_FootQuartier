@@ -99,6 +99,35 @@ class ModerateurController extends Controller
             ->with('success', 'Terrain ajouté avec succès !');
     }
 
+    public function update(StoreTerrainRequest $request, $id)
+    {
+        $terrain = Terrain::where('id', $id)
+            ->where('moderateur_id', Auth::id())
+            ->firstOrFail();
+
+        $photoPath = $terrain->photo;
+        if ($request->hasFile('photo')) {
+            if ($photoPath) Storage::disk('public')->delete($photoPath);
+            $photoPath = $request->file('photo')->store('terrains', 'public');
+        }
+
+        $terrain->update([
+            'nom_terrain'      => $request->nom_terrain,
+            'localisation'     => $request->localisation,
+            'prix'             => $request->prix,
+            'capacite'         => $request->capacite,
+            'description_terr' => $request->description_terr,
+            'photo'            => $photoPath,
+            'latitude'         => $request->latitude  ?: null,
+            'longitude'        => $request->longitude ?: null,
+        ]);
+
+        $terrain->equipements()->sync($request->equipements ?? []);
+
+        return redirect()->route('moderateur.mesterrains.index')
+            ->with('success', 'Terrain modifié avec succès !');
+    }
+
     public function destroy($id)
     {
         $terrain = Terrain::where('id', $id)
