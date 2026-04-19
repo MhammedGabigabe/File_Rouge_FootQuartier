@@ -305,7 +305,7 @@
                             Ce compte permet de réserver des terrains, participer aux matchs
                             annoncés et interagir avec la communauté.
                         </p>
-                        <a href="{{ route('inscription') }}"
+                        <a href="{{ route('inscription', ['role' => 'joueur']) }}"
                             class="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition">
                             S'inscrire comme joueur
                         </a>
@@ -330,7 +330,7 @@
                             Ce compte est destiné aux gérants de terrains. Il permet de gérer les terrains,
                             les réservations et de maintenir le respect dans votre complexe.
                         </p>
-                        <a href="{{ route('inscription') }}"
+                        <a href="{{ route('inscription', ['role' => 'moderateur']) }}"
                             class="inline-block bg-emerald-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-emerald-700 transition">
                             S'inscrire comme modérateur
                         </a>

@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Role;
 use App\Http\Requests\RegisterRequest;
+use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
 {
-    public function showInscription() {
-        return view('inscription');
+    public function showInscription(Request $request) 
+    {
+        $role = $request->get('role');
+        return view('inscription', compact('role'));
     }
 
     public function showConnexion()
