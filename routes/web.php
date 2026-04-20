@@ -10,7 +10,9 @@ use App\Http\Controllers\TerrainController;
 use App\Http\Controllers\JoueurController;
 
 
+
 Route::get('/', function() { return redirect()->route('accueil'); });
+
 Route::middleware('guest.custom')->group(function () {
     Route::get('/accueil', [AccueilController::class, 'index'])->name('accueil');
     Route::get('/register', [AuthController::class, 'showInscription'])->name('inscription');
@@ -19,12 +21,6 @@ Route::middleware('guest.custom')->group(function () {
     Route::get('/login', [AuthController::class, 'showConnexion'])->name('login');
     Route::post('/login', [AuthController::class, 'login']);
 });
-
-Route::get('/terrains', function(){ return view('terrains'); })->name('terrains');
-Route::get('/annonces', fn() => view('annonces'))->name('annonces');
-Route::get('/annonces/{id}', [AnnonceController::class, 'show'])->name('annonces.show');
-
-Route::get('/terrains/{id}', [TerrainController::class, 'show'])->name('terrains.show');
 
 Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -69,6 +65,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/notifications', [JoueurController::class, 'notifications'])
             ->name('joueur.notifications');
     });
-
 });
+
+
+Route::get('/terrains', [TerrainController::class, 'index'] )->name('terrains');
+Route::get('/annonces', fn() => view('annonces'))->name('annonces');
+Route::get('/annonces/{id}', [AnnonceController::class, 'show'])->name('annonces.show');
+
+Route::get('/terrains/{id}', [TerrainController::class, 'show'])->name('terrains.show');
+
 
