@@ -165,29 +165,87 @@
                     </a>
                 </div>
 
-                <div class="grid md:grid-cols-3 gap-6">
-                    @forelse($terrains as $terrain)
-                        <div class="terrain-card bg-white rounded-2xl shadow overflow-hidden border border-gray-100">
-                            <img src="{{ asset('storage/' . $terrain->photo) }}" alt="{{ $terrain->nom_terrain }}"
-                                class="w-full h-44 object-cover">
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @forelse ($terrains as $terrain)
+                        @php
+                            $equips = is_array($terrain->equipements) ? $terrain->equipements : [];
+                            $equipsLabels = [
+                                'vestiaires' => 'Vestiaires',
+                                'eclairage' => 'Éclairage',
+                                'gazon_synthetique' => 'Gazon synthétique',
+                                'parking' => 'Parking',
+                                'buvette' => 'Buvette',
+                            ];
+                        @endphp
 
-                            <div class="p-4">
-                                <h3 class="font-bold text-lg mb-1">{{ $terrain->nom_terrain }}</h3>
-                                <p class="text-sm text-gray-500 mb-2">{{ $terrain->localisation }}</p>
-                                <div class="flex justify-between items-center">
-                                    <span class="text-emerald-600 font-bold">{{ $terrain->prix }} DH</span>
-                                    <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full">
+                        <a href="{{ route('terrains.show', $terrain->id) }}">
+                            <div
+                                class="terrain-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+                                <div class="relative">
+                                    <img src="{{ asset('storage/' . $terrain->photo) }}"
+                                        alt="{{ $terrain->nom_terrain }}" class="w-full h-44 object-cover">
+                                    <span
+                                        class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
                                         {{ $terrain->capacite }}v{{ $terrain->capacite }}
                                     </span>
+                                    <span
+                                        class="absolute top-3 right-3 bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                                        {{ $terrain->prix }} DH/h
+                                    </span>
                                 </div>
-                                <a href="{{ route('terrains.show', $terrain->id) }}"
-                                    class="mt-3 block text-center bg-emerald-600 text-white py-2 rounded-lg text-sm hover:bg-emerald-700 transition">
-                                    Voir le terrain
-                                </a>
+
+                                <div class="p-4">
+                                    <h3 class="font-bold text-base mb-1">{{ $terrain->nom_terrain }}</h3>
+
+                                    <div class="flex items-center gap-1 text-gray-400 text-xs mb-3">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+                                            viewBox="0 0 24 24">
+                                            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                            <circle cx="12" cy="10" r="3" />
+                                        </svg>
+                                        {{ $terrain->localisation }}
+                                    </div>
+
+                                    @if (count($equips) > 0)
+                                        <div class="flex flex-wrap gap-1 mb-3">
+                                            @foreach (array_slice($equips, 0, 3) as $eq)
+                                                @php $eq = is_array($eq) ? $eq[0] : $eq; @endphp
+                                                <span
+                                                    class="badge-equip">{{ $equipsLabels[$eq] ?? ucfirst(str_replace('_', ' ', $eq)) }}</span>
+                                            @endforeach
+                                            @if (count($equips) > 3)
+                                                <span class="badge-equip">+{{ count($equips) - 3 }}</span>
+                                            @endif
+                                        </div>
+                                    @endif
+
+
+                                    @php
+                                        $rating = round($terrain->avis_avg_note ?? 0);
+                                    @endphp
+
+                                    <div class="flex items-center gap-1 mb-3">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <svg class="w-3.5 h-3.5 {{ $i <= $rating ? 'text-amber-400' : 'text-gray-200' }}"
+                                                fill="currentColor" viewBox="0 0 20 20">
+                                                <path
+                                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                            </svg>
+                                        @endfor
+                                    </div>
+
+                                </div>
                             </div>
-                        </div>
+                        </a>
+
                     @empty
-                        <p class="text-gray-500 col-span-3 text-center">Aucun terrain disponible pour le moment.</p>
+                        <div class="col-span-3 text-center py-16">
+                            <p class="text-gray-400 font-medium">Aucun terrain trouvé avec ces filtres.</p>
+                            <a href="{{ route('terrains') }}"
+                                class="mt-3 inline-block text-emerald-600 text-sm hover:underline">
+                                Réinitialiser les filtres
+                            </a>
+                        </div>
                     @endforelse
                 </div>
             </div>
