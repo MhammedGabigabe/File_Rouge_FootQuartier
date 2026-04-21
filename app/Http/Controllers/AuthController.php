@@ -18,8 +18,11 @@ class AuthController extends Controller
         return view('inscription', compact('role'));
     }
 
-    public function showConnexion()
+    public function showConnexion(Request $request)
     {
+        if ($request->has('redirect')) {
+            session()->put('url.intended', $request->query('redirect'));
+        }
         return view('connexion');
     }
 
@@ -65,6 +68,10 @@ class AuthController extends Controller
 
             if (!$user->estApprouve && $user->isModerateur()) {
                 return redirect()->route('attente.approbation');
+            }
+
+            if (session()->has('url.intended')) {
+                return redirect()->intended();
             }
 
             if ($user->isAdmin()) {
