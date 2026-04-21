@@ -26,4 +26,14 @@ class TerrainController extends Controller
 
         return view('terrains', compact('terrains'));
     }
+
+    public function show($id)
+    {
+        $terrain = Terrain::withAvg('avis', 'note')
+                        ->withCount('avis')
+                        ->with(['equipements', 'avis.joueur'])
+                        ->findOrFail($id);
+
+        return view('terrains_show', compact('terrain'));
+    }
 }
