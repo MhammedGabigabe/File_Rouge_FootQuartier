@@ -290,7 +290,7 @@
 
             <form method="GET" action="{{ route('terrains') }}">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8">
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
                         <div class="relative">
                             <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none"
@@ -298,8 +298,8 @@
                                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
                                 <circle cx="12" cy="10" r="3" />
                             </svg>
-                            <input type="text" name="localisation" value="{{ request('localisation') }}"
-                                placeholder="Ville, quartier..."
+                            <input type="text" name="localisation" oninput="autoSubmit(this)"
+                                value="{{ request('localisation') }}" placeholder="Ville, quartier..."
                                 class="w-full pl-9 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:border-emerald-400 transition">
                         </div>
 
@@ -327,19 +327,6 @@
                             <option value="buvette" {{ request('equipement') == 'buvette' ? 'selected' : '' }}>Buvette
                             </option>
                         </select>
-
-                        <div class="flex gap-2">
-                            <button type="submit"
-                                class="flex-1 px-4 py-2.5 bg-emerald-600 text-white text-sm rounded-xl hover:bg-emerald-700 transition font-medium">
-                                Filtrer
-                            </button>
-                            @if (request()->hasAny(['localisation', 'capacite', 'equipement']))
-                                <a href="{{ route('terrains') }}"
-                                    class="px-4 py-2.5 border border-gray-200 text-gray-500 text-sm rounded-xl hover:border-red-300 hover:text-red-500 transition">
-                                    ✕
-                                </a>
-                            @endif
-                        </div>
                     </div>
                 </div>
 
@@ -365,67 +352,65 @@
                         ];
                     @endphp
 
-                    <div class="terrain-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
-                        <div class="relative">
-                            <img src="{{ asset('storage/' . $terrain->photo) }}" alt="{{ $terrain->nom_terrain }}"
-                                class="w-full h-44 object-cover">
-                            <span
-                                class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
-                                {{ $terrain->capacite }}v{{ $terrain->capacite }}
-                            </span>
-                            <span
-                                class="absolute top-3 right-3 bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
-                                {{ $terrain->prix }} DH/h
-                            </span>
-                        </div>
-
-                        <div class="p-4">
-                            <h3 class="font-bold text-base mb-1">{{ $terrain->nom_terrain }}</h3>
-
-                            <div class="flex items-center gap-1 text-gray-400 text-xs mb-3">
-                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
-                                    viewBox="0 0 24 24">
-                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-                                    <circle cx="12" cy="10" r="3" />
-                                </svg>
-                                {{ $terrain->localisation }}
+                    <a href="{{ route('terrains.show', $terrain->id) }}">
+                        <div
+                            class="terrain-card bg-white rounded-2xl shadow-sm overflow-hidden border border-gray-100">
+                            <div class="relative">
+                                <img src="{{ asset('storage/' . $terrain->photo) }}"
+                                    alt="{{ $terrain->nom_terrain }}" class="w-full h-44 object-cover">
+                                <span
+                                    class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                                    {{ $terrain->capacite }}v{{ $terrain->capacite }}
+                                </span>
+                                <span
+                                    class="absolute top-3 right-3 bg-emerald-600 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+                                    {{ $terrain->prix }} DH/h
+                                </span>
                             </div>
 
-                            @if (count($equips) > 0)
-                                <div class="flex flex-wrap gap-1 mb-3">
-                                    @foreach (array_slice($equips, 0, 3) as $eq)
-                                        @php $eq = is_array($eq) ? $eq[0] : $eq; @endphp
-                                        <span
-                                            class="badge-equip">{{ $equipsLabels[$eq] ?? ucfirst(str_replace('_', ' ', $eq)) }}</span>
-                                    @endforeach
-                                    @if (count($equips) > 3)
-                                        <span class="badge-equip">+{{ count($equips) - 3 }}</span>
-                                    @endif
-                                </div>
-                            @endif
+                            <div class="p-4">
+                                <h3 class="font-bold text-base mb-1">{{ $terrain->nom_terrain }}</h3>
 
-
-                            @php
-                                $rating = round($terrain->avis_avg_note ?? 0);
-                            @endphp
-
-                            <div class="flex items-center gap-1 mb-3">
-                                @for ($i = 1; $i <= 5; $i++)
-                                    <svg class="w-3.5 h-3.5 {{ $i <= $rating ? 'text-amber-400' : 'text-gray-200' }}"
-                                        fill="currentColor" viewBox="0 0 20 20">
-                                        <path
-                                            d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                <div class="flex items-center gap-1 text-gray-400 text-xs mb-3">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2"
+                                        viewBox="0 0 24 24">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+                                        <circle cx="12" cy="10" r="3" />
                                     </svg>
-                                @endfor
+                                    {{ $terrain->localisation }}
+                                </div>
+
+                                @if (count($equips) > 0)
+                                    <div class="flex flex-wrap gap-1 mb-3">
+                                        @foreach (array_slice($equips, 0, 3) as $eq)
+                                            @php $eq = is_array($eq) ? $eq[0] : $eq; @endphp
+                                            <span
+                                                class="badge-equip">{{ $equipsLabels[$eq] ?? ucfirst(str_replace('_', ' ', $eq)) }}</span>
+                                        @endforeach
+                                        @if (count($equips) > 3)
+                                            <span class="badge-equip">+{{ count($equips) - 3 }}</span>
+                                        @endif
+                                    </div>
+                                @endif
+
+
+                                @php
+                                    $rating = round($terrain->avis_avg_note ?? 0);
+                                @endphp
+
+                                <div class="flex items-center gap-1 mb-3">
+                                    @for ($i = 1; $i <= 5; $i++)
+                                        <svg class="w-3.5 h-3.5 {{ $i <= $rating ? 'text-amber-400' : 'text-gray-200' }}"
+                                            fill="currentColor" viewBox="0 0 20 20">
+                                            <path
+                                                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                    @endfor
+                                </div>
+
                             </div>
-
-
-                            <a href="{{ route('terrains.show', $terrain->id) }}"
-                                class="block text-center bg-emerald-600 text-white py-2 rounded-xl text-sm hover:bg-emerald-700 transition font-medium">
-                                Voir le terrain
-                            </a>
                         </div>
-                    </div>
+                    </a>
 
                 @empty
                     <div class="col-span-3 text-center py-16">
@@ -439,7 +424,7 @@
             </div>
 
             @if ($terrains->hasPages())
-                <div class="mt-4">
+                <div class="mt-10">
                     {{ $terrains->links() }}
                 </div>
             @endif
@@ -478,5 +463,20 @@
     </div>
 
 </body>
+
+<script>
+    let timeout = null;
+
+    function autoSubmit(input) {
+        clearTimeout(timeout);
+
+        timeout = setTimeout(() => {
+            if (input.value.trim().length >= 1) {
+                input.form.submit();
+            }
+        });
+    }
+</script>
+
 
 </html>
