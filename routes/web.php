@@ -12,6 +12,8 @@ use App\Http\Controllers\JoueurController;
 
 
 Route::get('/', function() { return redirect()->route('accueil'); });
+Route::get('/terrains', [TerrainController::class, 'index'] )->name('terrains');
+Route::get('/terrains/{id}', [TerrainController::class, 'show'])->name('terrains.show');
 
 Route::middleware('guest.custom')->group(function () {
     Route::get('/accueil', [AccueilController::class, 'index'])->name('accueil');
@@ -67,11 +69,9 @@ Route::middleware('auth')->group(function () {
     });
 });
 
-
-Route::get('/terrains', [TerrainController::class, 'index'] )->name('terrains');
 Route::get('/annonces', fn() => view('annonces'))->name('annonces');
 Route::get('/annonces/{id}', [AnnonceController::class, 'show'])->name('annonces.show');
 
-Route::get('/terrains/{id}', [TerrainController::class, 'show'])->name('terrains.show');
+
 
 
