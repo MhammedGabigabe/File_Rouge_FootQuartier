@@ -100,8 +100,7 @@
                         </svg>
                         Mes réservations
                     </a>
-                    <a href="{{ route('annonces') }}"
-                        class="sidebar-nav-link {{ request()->routeIs('annonces') ? 'active' : '' }}">
+                    <a href="#routeAnnonce" class="sidebar-nav-link {{ request()->routeIs('annonces') ? 'active' : '' }}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -190,7 +189,7 @@
                 <div class="hidden md:flex gap-8 text-sm">
                     <a href="{{ route('accueil') }}" class="text-gray-600 hover:text-emerald-600">Accueil</a>
                     <a href="{{ route('terrains') }}" class="text-emerald-600 font-semibold">Terrains</a>
-                    <a href="{{ route('annonces') }}" class="text-gray-600 hover:text-emerald-600">Matchs</a>
+                    <a href="#route('annonce')" class="text-gray-600 hover:text-emerald-600">Matchs</a>
                 </div>
                 <div class="flex gap-3">
                     <a href="{{ route('login') }}"
@@ -451,14 +450,73 @@
             (function() {
                 let year, month, selectedDate = null;
                 const prix = {{ $terrain->prix }};
-
                 const now = new Date();
                 year = now.getFullYear();
                 month = now.getMonth();
 
-                const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
-                    'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+                const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre',
+                    'Octobre', 'Novembre', 'Décembre'
                 ];
+
+                function getBlockedHours(dateStr) {
+                    const blocked = new Set();
+                    const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(
+                        now.getDate()).padStart(2, '0');
+
+                    if (dateStr === todayStr) {
+                        for (let h = 7; h <= now.getHours(); h++) blocked.add(h);
+                    }
+
+                    reservationsData.forEach(r => {
+                        const dDebut = new Date(r.debut.replace(' ', 'T'));
+                        const dFin = new Date(r.fin.replace(' ', 'T'));
+                        const rDate = dDebut.getFullYear() + '-' + String(dDebut.getMonth() + 1).padStart(2, '0') +
+                            '-' + String(dDebut.getDate()).padStart(2, '0');
+                        if (rDate === dateStr) {
+                            for (let h = dDebut.getHours(); h < dFin.getHours(); h++) blocked.add(h);
+                        }
+                    });
+
+                    return blocked;
+                }
+
+                function updateSelects() {
+                    if (!selectedDate) return;
+                    const blocked = getBlockedHours(selectedDate);
+                    const debutSel = document.getElementById('heure-debut');
+                    const finSel = document.getElementById('heure-fin');
+                    const debutVal = parseInt(debutSel.value);
+
+                    [...debutSel.options].forEach(opt => {
+                        const h = parseInt(opt.value);
+                        if (!h) return;
+                        opt.disabled = blocked.has(h);
+                        opt.style.color = blocked.has(h) ? '#9ca3af' : '';
+                    });
+
+                    [...finSel.options].forEach(opt => {
+                        const h = parseInt(opt.value);
+                        if (!h) return;
+                        let isBlocked = false;
+                        if (debutVal && h > debutVal) {
+                            for (let x = debutVal; x < h; x++) {
+                                if (blocked.has(x)) {
+                                    isBlocked = true;
+                                    break;
+                                }
+                            }
+                        } else {
+                            isBlocked = true;
+                        }
+                        opt.disabled = isBlocked;
+                        opt.style.color = isBlocked ? '#9ca3af' : '';
+                    });
+
+                    if (debutSel.options[debutSel.selectedIndex]?.disabled) debutSel.value = '';
+                    if (finSel.options[finSel.selectedIndex]?.disabled) finSel.value = '';
+
+                    calcMontant();
+                }
 
                 function renderCalendar() {
                     document.getElementById('month-label').textContent = months[month] + ' ' + year;
@@ -470,9 +528,7 @@
                     const daysInMonth = new Date(year, month + 1, 0).getDate();
                     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-                    for (let i = 0; i < offset; i++) {
-                        grid.insertAdjacentHTML('beforeend', '<div></div>');
-                    }
+                    for (let i = 0; i < offset; i++) grid.insertAdjacentHTML('beforeend', '<div></div>');
 
                     for (let d = 1; d <= daysInMonth; d++) {
                         const date = new Date(year, month, d);
@@ -491,8 +547,10 @@
                             btn.addEventListener('click', () => {
                                 selectedDate = dateStr;
                                 document.getElementById('selected-date').value = dateStr;
+                                document.getElementById('heure-debut').value = '';
+                                document.getElementById('heure-fin').value = '';
                                 renderCalendar();
-                                calcMontant();
+                                updateSelects();
                             });
                         }
                         grid.appendChild(btn);
@@ -500,17 +558,14 @@
                 }
 
                 document.getElementById('prev-month').addEventListener('click', () => {
-                    month--;
-                    if (month < 0) {
+                    if (--month < 0) {
                         month = 11;
                         year--;
                     }
                     renderCalendar();
                 });
-
                 document.getElementById('next-month').addEventListener('click', () => {
-                    month++;
-                    if (month > 11) {
+                    if (++month > 11) {
                         month = 0;
                         year++;
                     }
@@ -534,12 +589,10 @@
                         montantEl.textContent = '-- DH';
                         return;
                     }
-                    const duree = fin - debut;
-                    const total = duree * prix;
-                    montantEl.textContent = total + ' DH';
+                    montantEl.textContent = ((fin - debut) * prix) + ' DH';
                 }
 
-                document.getElementById('heure-debut').addEventListener('change', calcMontant);
+                document.getElementById('heure-debut').addEventListener('change', () => updateSelects());
                 document.getElementById('heure-fin').addEventListener('change', calcMontant);
 
                 document.querySelector('form').addEventListener('submit', function(e) {
@@ -560,11 +613,10 @@
                         return;
                     }
 
-                    const debutStr = debut === 24 ? '00:00:00' : String(debut).padStart(2, '0') + ':00:00';
+                    const debutStr = String(debut).padStart(2, '0') + ':00:00';
                     const finStr = fin === 24 ? '00:00:00' : String(fin).padStart(2, '0') + ':00:00';
-                    const dateFinStr = fin === 24 ?
-                        new Date(new Date(selectedDate).getTime() + 86400000).toISOString().slice(0, 10) :
-                        selectedDate;
+                    const dateFinStr = fin === 24 ? new Date(new Date(selectedDate).getTime() + 86400000)
+                        .toISOString().slice(0, 10) : selectedDate;
 
                     document.getElementById('input-date-debut').value = selectedDate + ' ' + debutStr;
                     document.getElementById('input-date-fin').value = dateFinStr + ' ' + finStr;
@@ -573,20 +625,24 @@
 
                 renderCalendar();
             })();
+
+            function closeModal() {
+                document.getElementById('modal-reservation').classList.add('hidden');
+            }
+
+            document.getElementById('modal-reservation').addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+
+            const reservationsData = @json(
+                $reservations->map(fn($r) => [
+                        'debut' => $r->date_debut,
+                        'fin' => $r->date_fin,
+                    ]));
         </script>
     @endauth
 </body>
-
-<script>
-    function closeModal() {
-        document.getElementById('modal-reservation').classList.add('hidden');
-    }
-
-    document.getElementById('modal-reservation').addEventListener('click', function(e) {
-        if (e.target === this) {
-            this.classList.add('hidden');
-        }
-    });
-</script>
 
 </html>
