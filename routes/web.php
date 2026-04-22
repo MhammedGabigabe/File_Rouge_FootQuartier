@@ -8,7 +8,7 @@ use App\Http\Controllers\AccueilController;
 use App\Http\Controllers\AnnonceController;
 use App\Http\Controllers\TerrainController;
 use App\Http\Controllers\JoueurController;
-
+use App\Http\Controllers\ReservationController;
 
 
 Route::get('/', function() { return redirect()->route('accueil'); });
