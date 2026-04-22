@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\TerrainFilterRequest;
 use App\Models\Terrain;
+use App\Models\Reservation;
 use Illuminate\Support\Facades\Auth;
 
 class TerrainController extends Controller
@@ -34,6 +35,10 @@ class TerrainController extends Controller
                         ->with(['equipements', 'avis.joueur'])
                         ->findOrFail($id);
 
-        return view('terrains_show', compact('terrain'));
+        $reservations = Reservation::where('terrain_id', $id)
+                            ->where('statut', '!=', 'annulee')
+                            ->get(['date_debut', 'date_fin']);                
+
+        return view('terrains_show', compact('terrain', 'reservations'));
     }
 }
