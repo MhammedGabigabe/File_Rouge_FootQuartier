@@ -300,10 +300,11 @@
 
                             <div class="mt-auto pt-3 border-t border-gray-100">
                                 @auth
-                                    <a href="#"
+                                    <button
+                                        onclick="document.getElementById('modal-reservation').classList.remove('hidden')"
                                         class="block w-full text-center px-4 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition font-medium text-sm">
                                         Réserver ce terrain
-                                    </a>
+                                    </button>
                                 @else
                                     <a href="{{ route('login', ['redirect' => route('terrains.show', $terrain->id)]) }}"
                                         class="block w-full text-center px-4 py-2.5 bg-emerald-600 text-white rounded-xl hover:bg-emerald-700 transition font-medium text-sm">
@@ -357,6 +358,235 @@
         </script>
     @endif
 
+    @auth
+        <div id="modal-reservation" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center ">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
+
+                <form action="{{ route('reservations.checkout') }}" method="POST" class=" p-6 space-y-2">
+                    @csrf
+                    <input type="hidden" name="terrain_id" value="{{ $terrain->id }}">
+                    <input type="hidden" name="prix_unitaire" value="{{ $terrain->prix }}">
+                    <input type="hidden" name="date_debut" id="input-date-debut">
+                    <input type="hidden" name="date_fin" id="input-date-fin">
+                    <input type="hidden" name="montant" id="input-montant">
+
+                    <div>
+                        <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Date</p>
+                        <div class="border border-gray-200 rounded-xl overflow-hidden">
+                            <div class="flex items-center justify-between px-4 py-2 border-b border-gray-100">
+                                <button type="button" id="prev-month"
+                                    class="text-gray-400 hover:text-emerald-600 text-lg px-1">‹</button>
+                                <span id="month-label" class="text-sm font-semibold text-gray-700"></span>
+                                <button type="button" id="next-month"
+                                    class="text-gray-400 hover:text-emerald-600 text-lg px-1">›</button>
+                            </div>
+                            <div class="p-3">
+                                <div class="grid grid-cols-7 mb-1">
+                                    @foreach (['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'] as $j)
+                                        <div class="text-center text-xs text-gray-400 py-1">{{ $j }}</div>
+                                    @endforeach
+                                </div>
+                                <div id="days-grid" class="grid grid-cols-7 gap-y-1"></div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="selected-date" name="selected_date">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label
+                                class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Début</label>
+                            <select id="heure-debut" name="heure_debut"
+                                class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="">-- heure --</option>
+                                @for ($h = 7; $h <= 23; $h++)
+                                    <option value="{{ $h }}">{{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div>
+                            <label
+                                class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Fin</label>
+                            <select id="heure-fin" name="heure_fin"
+                                class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                                <option value="">-- heure --</option>
+                                @for ($h = 8; $h <= 24; $h++)
+                                    <option value="{{ $h }}">
+                                        {{ $h == 24 ? '00:00 (minuit)' : str_pad($h, 2, '0', STR_PAD_LEFT) . ':00' }}
+                                    </option>
+                                @endfor
+                            </select>
+                        </div>
+                    </div>
+
+                    <div id="res-error"
+                        class="hidden bg-red-50 text-red-700 text-sm px-4 py-2.5 rounded-xl border border-red-200"></div>
+
+                    <div class="bg-gray-50 rounded-xl px-4 py-3 flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Montant total</span>
+                        <span id="montant-display" class="text-xl font-bold text-emerald-600">-- DH</span>
+                    </div>
+
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeModal()"
+                            class="w-1/2 py-3 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-100 transition text-sm font-medium">
+                            Annuler
+                        </button>
+
+                        <button type="submit" id="btn-payer"
+                            class="w-1/2 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold hover:bg-emerald-700 transition text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                            </svg>
+                            Payer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <script>
+            (function() {
+                let year, month, selectedDate = null;
+                const prix = {{ $terrain->prix }};
+
+                const now = new Date();
+                year = now.getFullYear();
+                month = now.getMonth();
+
+                const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
+                    'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
+                ];
+
+                function renderCalendar() {
+                    document.getElementById('month-label').textContent = months[month] + ' ' + year;
+                    const grid = document.getElementById('days-grid');
+                    grid.innerHTML = '';
+
+                    const firstDay = new Date(year, month, 1).getDay();
+                    const offset = firstDay === 0 ? 6 : firstDay - 1;
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+
+                    for (let i = 0; i < offset; i++) {
+                        grid.insertAdjacentHTML('beforeend', '<div></div>');
+                    }
+
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        const date = new Date(year, month, d);
+                        const isPast = date < today;
+                        const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+                        const isSelected = dateStr === selectedDate;
+
+                        const btn = document.createElement('button');
+                        btn.type = 'button';
+                        btn.textContent = d;
+                        btn.className = 'text-center text-xs py-1.5 rounded-full transition ' +
+                            (isPast ? 'text-gray-300 cursor-not-allowed' :
+                                isSelected ? 'bg-emerald-600 text-white font-semibold' :
+                                'hover:bg-emerald-50 text-gray-700 cursor-pointer');
+                        if (!isPast) {
+                            btn.addEventListener('click', () => {
+                                selectedDate = dateStr;
+                                document.getElementById('selected-date').value = dateStr;
+                                renderCalendar();
+                                calcMontant();
+                            });
+                        }
+                        grid.appendChild(btn);
+                    }
+                }
+
+                document.getElementById('prev-month').addEventListener('click', () => {
+                    month--;
+                    if (month < 0) {
+                        month = 11;
+                        year--;
+                    }
+                    renderCalendar();
+                });
+
+                document.getElementById('next-month').addEventListener('click', () => {
+                    month++;
+                    if (month > 11) {
+                        month = 0;
+                        year++;
+                    }
+                    renderCalendar();
+                });
+
+                function calcMontant() {
+                    const debut = parseInt(document.getElementById('heure-debut').value);
+                    const fin = parseInt(document.getElementById('heure-fin').value);
+                    const errEl = document.getElementById('res-error');
+                    const montantEl = document.getElementById('montant-display');
+
+                    errEl.classList.add('hidden');
+                    if (!debut || !fin) {
+                        montantEl.textContent = '-- DH';
+                        return;
+                    }
+                    if (fin <= debut) {
+                        errEl.textContent = "L'heure de fin doit être après l'heure de début.";
+                        errEl.classList.remove('hidden');
+                        montantEl.textContent = '-- DH';
+                        return;
+                    }
+                    const duree = fin - debut;
+                    const total = duree * prix;
+                    montantEl.textContent = total + ' DH';
+                }
+
+                document.getElementById('heure-debut').addEventListener('change', calcMontant);
+                document.getElementById('heure-fin').addEventListener('change', calcMontant);
+
+                document.querySelector('form').addEventListener('submit', function(e) {
+                    const debut = parseInt(document.getElementById('heure-debut').value);
+                    const fin = parseInt(document.getElementById('heure-fin').value);
+                    const errEl = document.getElementById('res-error');
+
+                    if (!selectedDate) {
+                        e.preventDefault();
+                        errEl.textContent = "Veuillez choisir une date.";
+                        errEl.classList.remove('hidden');
+                        return;
+                    }
+                    if (!debut || !fin || fin <= debut) {
+                        e.preventDefault();
+                        errEl.textContent = "Veuillez choisir des heures valides.";
+                        errEl.classList.remove('hidden');
+                        return;
+                    }
+
+                    const debutStr = debut === 24 ? '00:00:00' : String(debut).padStart(2, '0') + ':00:00';
+                    const finStr = fin === 24 ? '00:00:00' : String(fin).padStart(2, '0') + ':00:00';
+                    const dateFinStr = fin === 24 ?
+                        new Date(new Date(selectedDate).getTime() + 86400000).toISOString().slice(0, 10) :
+                        selectedDate;
+
+                    document.getElementById('input-date-debut').value = selectedDate + ' ' + debutStr;
+                    document.getElementById('input-date-fin').value = dateFinStr + ' ' + finStr;
+                    document.getElementById('input-montant').value = (fin - debut) * prix;
+                });
+
+                renderCalendar();
+            })();
+        </script>
+    @endauth
 </body>
+
+<script>
+    function closeModal() {
+        document.getElementById('modal-reservation').classList.add('hidden');
+    }
+
+    document.getElementById('modal-reservation').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.add('hidden');
+        }
+    });
+</script>
 
 </html>

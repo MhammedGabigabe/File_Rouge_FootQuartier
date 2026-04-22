@@ -67,6 +67,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/notifications', [JoueurController::class, 'notifications'])
             ->name('joueur.notifications');
     });
+    
 });
 
 Route::get('/annonces', fn() => view('annonces'))->name('annonces');
