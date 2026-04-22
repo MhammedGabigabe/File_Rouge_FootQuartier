@@ -21,9 +21,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'guest.custom' => RedirigerSiAuthentifie::class,
             'isJoueur' => IsJoueur::class,
         ]);
-        $middleware->validateCsrfTokens(except: [
-            'webhook/stripe',
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
