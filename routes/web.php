@@ -67,11 +67,15 @@ Route::middleware('auth')->group(function () {
         Route::get('/notifications', [JoueurController::class, 'notifications'])
             ->name('joueur.notifications');
     });
-    
+    Route::post('/reservations/checkout', [ReservationController::class, 'checkout'])
+        ->name('reservations.checkout');
+    Route::get('/reservations/success', [ReservationController::class, 'success'])
+        ->name('reservations.success');
 });
 
-Route::get('/annonces', fn() => view('annonces'))->name('annonces');
-Route::get('/annonces/{id}', [AnnonceController::class, 'show'])->name('annonces.show');
+Route::post('/webhook/stripe', [ReservationController::class, 'webhook'])
+    ->name('webhook.stripe');
+
 
 
 
