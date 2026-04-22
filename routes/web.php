@@ -73,8 +73,6 @@ Route::middleware('auth')->group(function () {
         ->name('reservations.success');
 });
 
-Route::post('/webhook/stripe', [ReservationController::class, 'webhook'])
-    ->name('webhook.stripe');
 
 
 
