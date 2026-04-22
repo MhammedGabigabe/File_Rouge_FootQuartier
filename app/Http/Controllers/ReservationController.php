@@ -58,43 +58,31 @@ class ReservationController extends Controller
 
     public function success(Request $request)
     {
-        return view('reservations.success');
-    }
-
-    public function webhook(Request $request)
-    {
         Stripe::setApiKey(config('services.stripe.secret'));
 
-        try {
-            $event = Webhook::constructEvent(
-                $request->getContent(),
-                $request->header('Stripe-Signature'),
-                config('services.stripe.webhook_secret')
-            );
-        } catch (\Exception $e) {
-            return response('Webhook invalide', 400);
+        $session = Session::retrieve($request->query('session_id'));
+
+        if (!$session || $session->payment_status !== 'paid') {
+            return redirect()->route('terrains')->with('error', 'Paiement non confirmé.');
         }
 
-        if ($event->type === 'checkout.session.completed') {
-            $session     = $event->data->object;
-            $reservation = Reservation::where('stripe_payment_id', $session->id)->first();
+        $reservation = Reservation::where('stripe_payment_id', $session->id)->first();
 
-            if ($reservation && $reservation->statut === 'en_attente') {
-                $reservation->update(['statut' => 'confirmee']);
+        if ($reservation && $reservation->statut === 'en_attente') {
+            $reservation->update(['statut' => 'confirmee']);
 
-                Transaction::create([
-                    'user_id'               => $reservation->user_id,
-                    'type'                  => 'paiement_reservation',
-                    'montant'               => $reservation->montant,
-                    'points'                => 0,
-                    'reference'             => $session->payment_intent,
-                    'statut'                => 'reussi',
-                    'transactionnable_id'   => $reservation->id,
-                    'transactionnable_type' => Reservation::class,
-                ]);
-            }
+            Transaction::create([
+                'user_id'               => $reservation->user_id,
+                'type'                  => 'paiement_reservation',
+                'montant'               => $reservation->montant,
+                'points'                => 0,
+                'reference'             => $session->payment_intent,
+                'statut'                => 'reussi',
+                'transactionnable_id'   => $reservation->id,
+                'transactionnable_type' => Reservation::class,
+            ]);
         }
 
-        return response('OK', 200);
+        return view('reservations.success', compact('reservation'));
     }
 }
