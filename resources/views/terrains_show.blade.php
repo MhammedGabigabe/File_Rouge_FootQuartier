@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $terrain->nom_terrain }} - FootQuartier</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -153,7 +154,6 @@
                             Espace Modérateur
                         </a>
                     @endif
-
                     @if (Auth::user()->isAdmin())
                         <a href="{{ route('admin.dashboard') }}" class="sidebar-nav-link">
                             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -189,7 +189,7 @@
                 <div class="hidden md:flex gap-8 text-sm">
                     <a href="{{ route('accueil') }}" class="text-gray-600 hover:text-emerald-600">Accueil</a>
                     <a href="{{ route('terrains') }}" class="text-emerald-600 font-semibold">Terrains</a>
-                    <a href="#route('annonce')" class="text-gray-600 hover:text-emerald-600">Matchs</a>
+                    <a href="#route('annonces')" class="text-gray-600 hover:text-emerald-600">Matchs</a>
                 </div>
                 <div class="flex gap-3">
                     <a href="{{ route('login') }}"
@@ -202,7 +202,7 @@
     @endguest
 
     <div class="flex-1 min-w-0 @auth ml-64 mt-10 p-2 @endauth @guest pt-24 @endguest">
-        <main class="p-2 pb-16 max-w-5xl mx-auto ">
+        <main class="p-2 pb-16 max-w-5xl mx-auto">
 
             <a href="{{ route('terrains') }}"
                 class="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-emerald-600 mb-4 transition">
@@ -273,8 +273,7 @@
                             </div>
 
                             @if ($terrain->description_terr)
-                                <p class="text-sm text-gray-600 leading-relaxed mb-3">{{ $terrain->description_terr }}
-                                </p>
+                                <p class="text-sm text-gray-600 leading-relaxed mb-3">{{ $terrain->description_terr }}</p>
                             @endif
 
                             @php
@@ -291,8 +290,7 @@
                                 <div class="flex flex-wrap gap-2 mb-4">
                                     @foreach ($equips as $eq)
                                         @php $eq = is_array($eq) ? $eq[0] : $eq; @endphp
-                                        <span
-                                            class="badge-equip">{{ $equipsLabels[$eq] ?? ucfirst(str_replace('_', ' ', $eq)) }}</span>
+                                        <span class="badge-equip">{{ $equipsLabels[$eq] ?? ucfirst(str_replace('_', ' ', $eq)) }}</span>
                                     @endforeach
                                 </div>
                             @endif
@@ -332,9 +330,7 @@
                 const lat = {{ $terrain->latitude }};
                 const lng = {{ $terrain->longitude }};
 
-                const map = L.map('map', {
-                    scrollWheelZoom: false
-                }).setView([lat, lng], 15);
+                const map = L.map('map', { scrollWheelZoom: false }).setView([lat, lng], 15);
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap'
@@ -347,9 +343,7 @@
                     iconAnchor: [18, 36],
                 });
 
-                L.marker([lat, lng], {
-                        icon
-                    })
+                L.marker([lat, lng], { icon })
                     .addTo(map)
                     .bindPopup(`<strong>{{ $terrain->nom_terrain }}</strong><br>{{ $terrain->localisation }}`)
                     .openPopup();
@@ -358,16 +352,12 @@
     @endif
 
     @auth
-        <div id="modal-reservation" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center ">
+        {{-- Modal réservation --}}
+        <div id="modal-reservation" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
 
-                <form action="{{ route('reservations.checkout') }}" method="POST" class=" p-6 space-y-2">
-                    @csrf
-                    <input type="hidden" name="terrain_id" value="{{ $terrain->id }}">
-                    <input type="hidden" name="prix_unitaire" value="{{ $terrain->prix }}">
-                    <input type="hidden" name="date_debut" id="input-date-debut">
-                    <input type="hidden" name="date_fin" id="input-date-fin">
-                    <input type="hidden" name="montant" id="input-montant">
+                {{-- Étape 1 : Choix date / heure --}}
+                <div id="step-datetime" class="p-6 space-y-3">
 
                     <div>
                         <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">Date</p>
@@ -388,26 +378,23 @@
                                 <div id="days-grid" class="grid grid-cols-7 gap-y-1"></div>
                             </div>
                         </div>
-                        <input type="hidden" id="selected-date" name="selected_date">
+                        <input type="hidden" id="selected-date">
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label
-                                class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Début</label>
-                            <select id="heure-debut" name="heure_debut"
+                            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Début</label>
+                            <select id="heure-debut"
                                 class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                 <option value="">-- heure --</option>
                                 @for ($h = 7; $h <= 23; $h++)
-                                    <option value="{{ $h }}">{{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00
-                                    </option>
+                                    <option value="{{ $h }}">{{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00</option>
                                 @endfor
                             </select>
                         </div>
                         <div>
-                            <label
-                                class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Fin</label>
-                            <select id="heure-fin" name="heure_fin"
+                            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Fin</label>
+                            <select id="heure-fin"
                                 class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                 <option value="">-- heure --</option>
                                 @for ($h = 8; $h <= 24; $h++)
@@ -432,21 +419,76 @@
                             class="w-1/2 py-3 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-100 transition text-sm font-medium">
                             Annuler
                         </button>
-
-                        <button type="submit" id="btn-payer"
+                        <button type="button" id="btn-continuer"
                             class="w-1/2 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold hover:bg-emerald-700 transition text-sm">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
-                            </svg>
-                            Payer
+                            Continuer →
                         </button>
                     </div>
-                </form>
+                </div>
+
+                {{-- Étape 2 : Formulaire Stripe Elements --}}
+                <div id="step-paiement" class="hidden p-6 space-y-4">
+
+                    <div class="flex items-center gap-3 mb-2">
+                        <button type="button" id="btn-retour" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <h3 class="font-semibold text-gray-800">Paiement sécurisé</h3>
+                    </div>
+
+                    <div id="recap-reservation" class="bg-emerald-50 rounded-xl px-4 py-3 text-sm text-emerald-800"></div>
+
+                    <div id="payment-error"
+                        class="hidden bg-red-50 text-red-700 text-sm px-4 py-2.5 rounded-xl border border-red-200"></div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-2">Carte bancaire</label>
+                        <div id="card-element" class="border border-gray-200 rounded-xl px-3 py-3 bg-white"></div>
+                    </div>
+
+                    <button type="button" id="btn-payer"
+                        class="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold hover:bg-emerald-700 transition text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        <span id="btn-payer-label">Payer</span>
+                    </button>
+
+                    <p class="text-center text-xs text-gray-400 flex items-center justify-center gap-1">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Paiement sécurisé par Stripe
+                    </p>
+                </div>
+
             </div>
         </div>
 
+        <script src="https://js.stripe.com/v3/"></script>
         <script>
+            const reservationsData = @json($reservations->map(fn($r) => ['debut' => $r->date_debut, 'fin' => $r->date_fin]));
+
+            const stripe = Stripe("{{ config('services.stripe.key') }}");
+            const elements = stripe.elements();
+            const cardElement = elements.create('card', {
+                style: {
+                    base: {
+                        fontSize: '14px',
+                        color: '#1f2937',
+                        '::placeholder': { color: '#9ca3af' }
+                    }
+                }
+            });
+            cardElement.mount('#card-element');
+
+            let clientSecret = null;
+
             (function() {
                 let year, month, selectedDate = null;
                 const prix = {{ $terrain->prix }};
@@ -454,14 +496,14 @@
                 year = now.getFullYear();
                 month = now.getMonth();
 
-                const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre',
-                    'Octobre', 'Novembre', 'Décembre'
+                const months = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet',
+                    'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
                 ];
 
                 function getBlockedHours(dateStr) {
                     const blocked = new Set();
-                    const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(
-                        now.getDate()).padStart(2, '0');
+                    const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(now.getDate()).padStart(2, '0');
 
                     if (dateStr === todayStr) {
                         for (let h = 7; h <= now.getHours(); h++) blocked.add(h);
@@ -500,10 +542,7 @@
                         let isBlocked = false;
                         if (debutVal && h > debutVal) {
                             for (let x = debutVal; x < h; x++) {
-                                if (blocked.has(x)) {
-                                    isBlocked = true;
-                                    break;
-                                }
+                                if (blocked.has(x)) { isBlocked = true; break; }
                             }
                         } else {
                             isBlocked = true;
@@ -558,17 +597,11 @@
                 }
 
                 document.getElementById('prev-month').addEventListener('click', () => {
-                    if (--month < 0) {
-                        month = 11;
-                        year--;
-                    }
+                    if (--month < 0) { month = 11; year--; }
                     renderCalendar();
                 });
                 document.getElementById('next-month').addEventListener('click', () => {
-                    if (++month > 11) {
-                        month = 0;
-                        year++;
-                    }
+                    if (++month > 11) { month = 0; year++; }
                     renderCalendar();
                 });
 
@@ -579,10 +612,7 @@
                     const montantEl = document.getElementById('montant-display');
 
                     errEl.classList.add('hidden');
-                    if (!debut || !fin) {
-                        montantEl.textContent = '-- DH';
-                        return;
-                    }
+                    if (!debut || !fin) { montantEl.textContent = '-- DH'; return; }
                     if (fin <= debut) {
                         errEl.textContent = "L'heure de fin doit être après l'heure de début.";
                         errEl.classList.remove('hidden');
@@ -595,19 +625,19 @@
                 document.getElementById('heure-debut').addEventListener('change', () => updateSelects());
                 document.getElementById('heure-fin').addEventListener('change', calcMontant);
 
-                document.querySelector('form').addEventListener('submit', function(e) {
+                document.getElementById('btn-continuer').addEventListener('click', async () => {
                     const debut = parseInt(document.getElementById('heure-debut').value);
                     const fin = parseInt(document.getElementById('heure-fin').value);
+                    const date = document.getElementById('selected-date').value;
                     const errEl = document.getElementById('res-error');
 
-                    if (!selectedDate) {
-                        e.preventDefault();
+                    errEl.classList.add('hidden');
+                    if (!date) {
                         errEl.textContent = "Veuillez choisir une date.";
                         errEl.classList.remove('hidden');
                         return;
                     }
                     if (!debut || !fin || fin <= debut) {
-                        e.preventDefault();
                         errEl.textContent = "Veuillez choisir des heures valides.";
                         errEl.classList.remove('hidden');
                         return;
@@ -615,34 +645,122 @@
 
                     const debutStr = String(debut).padStart(2, '0') + ':00:00';
                     const finStr = fin === 24 ? '00:00:00' : String(fin).padStart(2, '0') + ':00:00';
-                    const dateFinStr = fin === 24 ? new Date(new Date(selectedDate).getTime() + 86400000)
-                        .toISOString().slice(0, 10) : selectedDate;
+                    const dateFin = fin === 24 ?
+                        new Date(new Date(date).getTime() + 86400000).toISOString().slice(0, 10) : date;
+                    const montant = (fin - debut) * prix;
 
-                    document.getElementById('input-date-debut').value = selectedDate + ' ' + debutStr;
-                    document.getElementById('input-date-fin').value = dateFinStr + ' ' + finStr;
-                    document.getElementById('input-montant').value = (fin - debut) * prix;
+                    const btn = document.getElementById('btn-continuer');
+                    btn.disabled = true;
+                    btn.textContent = 'Chargement...';
+
+                    try {
+                        const res = await fetch("{{ route('reservations.payment-intent') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                            body: JSON.stringify({
+                                terrain_id: {{ $terrain->id }},
+                                date_debut: date + ' ' + debutStr,
+                                date_fin: dateFin + ' ' + finStr,
+                                montant: montant,
+                            }),
+                        });
+
+                        const data = await res.json();
+
+                        if (!res.ok) {
+                            errEl.textContent = data.error ?? 'Une erreur est survenue.';
+                            errEl.classList.remove('hidden');
+                            return;
+                        }
+
+                        clientSecret = data.clientSecret;
+
+                        document.getElementById('recap-reservation').innerHTML =
+                            `<strong>{{ $terrain->nom_terrain }}</strong><br>
+                             ${date} &middot; ${String(debut).padStart(2,'0')}h00 → ${fin === 24 ? '00h00' : String(fin).padStart(2,'0') + 'h00'}<br>
+                             <span class="font-bold">${montant} DH</span>`;
+
+                        document.getElementById('step-datetime').classList.add('hidden');
+                        document.getElementById('step-paiement').classList.remove('hidden');
+
+                    } catch (e) {
+                        errEl.textContent = 'Erreur réseau. Réessayez.';
+                        errEl.classList.remove('hidden');
+                    } finally {
+                        btn.disabled = false;
+                        btn.textContent = 'Continuer →';
+                    }
                 });
 
                 renderCalendar();
             })();
 
-            function closeModal() {
-                document.getElementById('modal-reservation').classList.add('hidden');
-            }
+            document.getElementById('btn-retour').addEventListener('click', () => {
+                document.getElementById('step-paiement').classList.add('hidden');
+                document.getElementById('step-datetime').classList.remove('hidden');
+                document.getElementById('payment-error').classList.add('hidden');
+            });
 
-            document.getElementById('modal-reservation').addEventListener('click', function(e) {
-                if (e.target === this) {
-                    this.classList.add('hidden');
+            document.getElementById('btn-payer').addEventListener('click', async () => {
+                const btn = document.getElementById('btn-payer');
+                const label = document.getElementById('btn-payer-label');
+                const errEl = document.getElementById('payment-error');
+
+                btn.disabled = true;
+                label.textContent = 'Traitement...';
+                errEl.classList.add('hidden');
+
+                const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: { card: cardElement }
+                });
+
+                if (error) {
+                    errEl.textContent = error.message;
+                    errEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    label.textContent = 'Payer';
+                    return;
+                }
+
+                if (paymentIntent.status === 'succeeded') {
+                    label.textContent = 'Confirmation...';
+                    try {
+                        const res = await fetch("{{ route('reservations.confirm') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                            },
+                            body: JSON.stringify({ payment_intent_id: paymentIntent.id }),
+                        });
+                        const data = await res.json();
+                        if (data.redirect) window.location.href = data.redirect;
+                    } catch (e) {
+                        errEl.textContent = 'Erreur lors de la confirmation. Contactez le support.';
+                        errEl.classList.remove('hidden');
+                        btn.disabled = false;
+                        label.textContent = 'Payer';
+                    }
                 }
             });
 
-            const reservationsData = @json(
-                $reservations->map(fn($r) => [
-                        'debut' => $r->date_debut,
-                        'fin' => $r->date_fin,
-                    ]));
+            function closeModal() {
+                document.getElementById('modal-reservation').classList.add('hidden');
+                document.getElementById('step-paiement').classList.add('hidden');
+                document.getElementById('step-datetime').classList.remove('hidden');
+                document.getElementById('payment-error').classList.add('hidden');
+                document.getElementById('res-error').classList.add('hidden');
+            }
+
+            document.getElementById('modal-reservation').addEventListener('click', function(e) {
+                if (e.target === this) closeModal();
+            });
         </script>
     @endauth
+
 </body>
 
 </html>
