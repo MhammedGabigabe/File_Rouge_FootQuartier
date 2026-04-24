@@ -12,7 +12,12 @@ class ReservationController extends Controller
 {
     public function createPaymentIntent(CheckoutReservationRequest $request)
     {
-        $terrain = Terrain::findOrFail($request->terrain_id);
+        $terrain = Terrain::with('moderateur')->findOrFail($request->terrain_id);
+        $moderateur = $terrain->moderateur;
+
+        if (!$moderateur || !$moderateur->stripe_id) {
+            return response()->json(['error' => 'Le modérateur n\'a pas de compte Stripe configuré.'], 422);
+        }
 
         $conflit = Reservation::where('terrain_id', $terrain->id)
             ->where('statut', '!=', 'annulee')
@@ -34,9 +39,16 @@ class ReservationController extends Controller
         try {
             \Stripe\Stripe::setApiKey(config('services.stripe.secret'));
 
+            $montantTotal   = (int) ($request->montant * 100);
+            $transferAmount = (int) ($montantTotal * 0.90);
+
             $paymentIntent = \Stripe\PaymentIntent::create([
-                'amount'   => (int) ($request->montant * 100),
-                'currency' => 'mad',
+                'amount'                 => $montantTotal,
+                'currency'               => 'mad',
+                'application_fee_amount' => $montantTotal - $transferAmount,
+                'transfer_data'          => [
+                    'destination' => $moderateur->stripe_id,
+                ],
                 'metadata' => [
                     'terrain_id' => $terrain->id,
                     'user_id'    => auth()->id(),
