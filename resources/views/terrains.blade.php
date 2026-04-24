@@ -248,7 +248,7 @@
                 <div class="hidden md:flex gap-8 text-sm">
                     <a href="{{ route('accueil') }}" class="public-nav-link">Accueil</a>
                     <a href="{{ route('terrains') }}" class="public-nav-link active">Terrains</a>
-                    <a href="{{ route('annonces') }}" class="public-nav-link">Matchs</a>
+                    <a href="#route('annonces')" class="public-nav-link">Matchs</a>
                     <a href="{{ route('accueil') }}#apropos" class="public-nav-link">À propos</a>
                 </div>
                 <div class="flex gap-3 items-center">
@@ -444,7 +444,7 @@
                             <ul class="text-sm space-y-2 text-gray-600">
                                 <li><a href="{{ route('terrains') }}"
                                         class="hover:text-emerald-600 transition">Terrains</a></li>
-                                <li><a href="{{ route('annonces') }}"
+                                <li><a href="#route('annonces')"
                                         class="hover:text-emerald-600 transition">Matchs</a></li>
                                 <li><a href="{{ route('accueil') }}#apropos" class="hover:text-emerald-600 transition">À
                                         propos</a></li>
