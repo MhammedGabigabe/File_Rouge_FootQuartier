@@ -67,10 +67,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/notifications', [JoueurController::class, 'notifications'])
             ->name('joueur.notifications');
     });
-    Route::post('/reservations/checkout', [ReservationController::class, 'checkout'])
-        ->name('reservations.checkout');
-    Route::get('/reservations/success', [ReservationController::class, 'success'])
-        ->name('reservations.success');
+    Route::post('/reservations/payment-intent', [ReservationController::class, 'createPaymentIntent'])
+        ->name('reservations.payment-intent');
+    Route::post('/reservations/confirm', [ReservationController::class, 'confirmReservation'])
+        ->name('reservations.confirm');
+
+    Route::get('/reservations/{id}/success', [ReservationController::class, 'success'])
+        ->name('reservations.success')
+        ->middleware('auth');
 });
 
 
