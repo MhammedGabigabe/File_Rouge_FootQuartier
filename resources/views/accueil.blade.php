@@ -255,7 +255,7 @@
             <div class="max-w-6xl mx-auto px-6">
                 <div class="flex justify-between items-center mb-10">
                     <h2 class="text-3xl font-bold text-emerald-600">Matchs disponibles</h2>
-                    <a href="{{ route('annonces') }}" class="text-emerald-600 text-sm font-semibold hover:underline">
+                    <a href="#route('annonces') " class="text-emerald-600 text-sm font-semibold hover:underline">
                         Voir tous →
                     </a>
                 </div>
@@ -279,7 +279,7 @@
                             <p class="text-sm text-gray-500 mb-4">
                                 Organisé par {{ $annonce->organisateur->nom }}
                             </p>
-                            <a href="{{ route('annonces.show', $annonce->id) }}"
+                            <a href="#route('annonces.show', $annonce->id)"
                                 class="block text-center bg-emerald-600 text-white py-2 rounded-lg text-sm hover:bg-emerald-700 transition">
                                 Rejoindre le match
                             </a>
