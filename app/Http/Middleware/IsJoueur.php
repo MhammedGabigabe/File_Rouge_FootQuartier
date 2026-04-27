@@ -12,7 +12,7 @@ class IsJoueur
     public function handle(Request $request, Closure $next): Response
     {
         $user = Auth::user();
-        if(!$user || !$user->isJoueur()){
+        if(!$user){
             abort(403, 'Vous n’avez pas accès à cet espace');
         }
         return $next($request);

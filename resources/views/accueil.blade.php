@@ -241,10 +241,6 @@
                     @empty
                         <div class="col-span-3 text-center py-16">
                             <p class="text-gray-400 font-medium">Aucun terrain trouvé avec ces filtres.</p>
-                            <a href="{{ route('terrains') }}"
-                                class="mt-3 inline-block text-emerald-600 text-sm hover:underline">
-                                Réinitialiser les filtres
-                            </a>
                         </div>
                     @endforelse
                 </div>
