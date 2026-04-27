@@ -270,23 +270,9 @@
         @guest pt-24 @endguest">
 
         <main class="p-6 pb-16">
-            @auth
-                <div class="flex justify-end mb-6">
-                    <div class="flex items-center gap-4 ">
-                        <span class="text-sm text-gray-500">
-                            Solde :
-                            <span class="text-emerald-600 font-bold">
-                                {{ Auth::user()->pointsCompte }} pts
-                            </span>
-                        </span>
-
-                        <a href="{{ route('joueur.points') }}"
-                            class="px-3 py-1.5 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition">
-                            Recharger
-                        </a>
-                    </div>
-                </div>
-            @endauth
+            <div class="mb-6">
+                <h2 class="text-2xl font-bold text-gray-800">Terrains</h2>
+            </div>
 
             <form method="GET" action="{{ route('terrains') }}">
                 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 mb-8">
