@@ -62,4 +62,15 @@ class JoueurController extends Controller
 
         return view('historique', compact('transactions'));
     }
+
+    public function reservations()
+    {
+        $reservations = Auth::user()
+            ->reservations()
+            ->with(['terrain', 'annonce'])
+            ->orderByDesc('date_debut')
+            ->paginate(3);
+
+        return view('joueur_reservations', compact('reservations'));
+    }
 }
