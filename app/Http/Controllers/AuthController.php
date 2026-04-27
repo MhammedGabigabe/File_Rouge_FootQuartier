@@ -32,6 +32,7 @@ class AuthController extends Controller
             'nom'         => $request->full_name,
             'email'        => $request->email,
             'password'     => Hash::make($request->password),
+            'stripe_id' => $request->role === 'moderateur' ? $request->stripe_id : null,
         ]);
 
         if (User::count() == 1) {
@@ -41,6 +42,7 @@ class AuthController extends Controller
             Auth::login($user);
             return redirect()->route('admin.dashboard');
         }
+        
 
         $role = Role::where('titre', $request->role)->first();
         $user->roles()->attach($role->id);
