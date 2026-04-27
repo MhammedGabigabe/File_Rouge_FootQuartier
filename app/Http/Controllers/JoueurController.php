@@ -41,4 +41,25 @@ class JoueurController extends Controller
             'prochainesReservations', 'prochainesParticipations'
         ));
     }
+
+    public function historique(Request $request)
+    {
+        $transactions = auth()->user()
+            ->transactions()
+            ->with('transactionnable')
+            ->when($request->type, function ($q) use ($request) {
+                if ($request->type === 'remboursement') {
+                    // Remboursements liés aux participations uniquement
+                    $q->where('type', 'remboursement')
+                    ->where('transactionnable_type', 'App\\Models\\Participation');
+                } else {
+                    $q->where('type', $request->type);
+                }
+            })
+            ->when($request->statut, fn($q) => $q->where('statut', $request->statut))
+            ->latest()
+            ->paginate(4);
+
+        return view('historique', compact('transactions'));
+    }
 }
