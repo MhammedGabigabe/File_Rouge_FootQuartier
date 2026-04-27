@@ -141,6 +141,6 @@ class ReservationController extends Controller
             ->where('user_id', auth()->id())
             ->firstOrFail();
 
-        return view('reservations.success', compact('reservation'));
+        return view('reservation_success', compact('reservation'));
     }
 }
