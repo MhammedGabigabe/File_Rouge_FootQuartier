@@ -186,21 +186,6 @@
 
         <main class="p-6">
 
-            <div class="flex justify-end mb-10">
-                <div class="flex items-center gap-4 ">
-                    <span class="text-sm text-gray-500">
-                        Solde :
-                        <span class="text-emerald-600 font-bold">
-                            {{ Auth::user()->pointsCompte }} pts
-                        </span>
-                    </span>
-
-                    <a href="{{ route('joueur.points') }}"
-                        class="px-3 py-1.5 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition">
-                        Recharger
-                    </a>
-                </div>
-            </div>
             <div class="grid md:grid-cols-4 gap-5 mb-8">
 
                 <div class="stat-card bg-white rounded-2xl shadow p-5 border border-gray-100">
