@@ -19,6 +19,9 @@ class RegisterRequest extends FormRequest
             'email'     => 'required|string|email|max:255|unique:users',
             'password'  => 'required|string|min:8',
             'role'      => User::count() == 0 ? 'nullable' : 'required|in:joueur,moderateur',
+            'stripe_id' => $this->input('role') === 'moderateur' 
+                        ? 'required|string|starts_with:acct_' 
+                        : 'nullable',
         ];
     }
 
@@ -31,6 +34,8 @@ class RegisterRequest extends FormRequest
             'password.min'       => 'Le mot de passe doit faire au moins 8 caractères.',
             'password.required'  => 'Le mot de passe est obligatoire',
             'role.required'      => 'Veuillez choisir un rôle.',
+            'stripe_id.required'      => 'Le Stripe Account ID est obligatoire pour un modérateur.',
+            'stripe_id.starts_with'   => 'Le Stripe ID doit commencer par "acct_".',
         ];
     }
 }
