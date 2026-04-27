@@ -272,6 +272,7 @@
         <main class="p-6 pb-16">
             <div class="mb-6">
                 <h2 class="text-2xl font-bold text-gray-800">Terrains</h2>
+                <p class="text-sm text-gray-400 mt-1">Trouver votre terrain facilement</p>
             </div>
 
             <form method="GET" action="{{ route('terrains') }}">
