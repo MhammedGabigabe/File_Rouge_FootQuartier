@@ -313,7 +313,7 @@
                                     </button>
                                 </form>
                             @else
-                                <a href="{{ route('login') }}"
+                                <a href="{{ route('login', ['redirect' => url()->current()]) }}"
                                     class="block text-center bg-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-300 transition font-medium">
                                     Se connecter pour rejoindre
                                 </a>
