@@ -22,11 +22,10 @@ class ReservationController extends Controller
         $conflit = Reservation::where('terrain_id', $terrain->id)
             ->where('statut', '!=', 'annulee')
             ->where(function ($q) use ($request) {
-                $q->whereBetween('date_debut', [$request->date_debut, $request->date_fin])
-                    ->orWhereBetween('date_fin', [$request->date_debut, $request->date_fin])
-                    ->orWhere(fn($q) => $q->where('date_debut', '<=', $request->date_debut)
-                        ->where('date_fin', '>=', $request->date_fin));
-            })->exists();
+                $q->where('date_debut', '<', $request->date_fin)
+                ->where('date_fin', '>', $request->date_debut);
+            })
+        ->exists();
 
         if ($conflit) {
             return response()->json(['error' => 'Ce créneau est déjà réservé.'], 422);
@@ -143,4 +142,5 @@ class ReservationController extends Controller
 
         return view('reservation_success', compact('reservation'));
     }
+
 }
