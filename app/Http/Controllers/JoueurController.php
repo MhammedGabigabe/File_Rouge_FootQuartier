@@ -6,6 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Stripe\Stripe;
+use Stripe\Checkout\Session;
+use App\Models\Transaction;
 
 class JoueurController extends Controller
 {
@@ -72,5 +75,99 @@ class JoueurController extends Controller
             ->paginate(3);
 
         return view('joueur_reservations', compact('reservations'));
+    }
+
+    public function points()
+    {
+        $user = Auth::user();
+        return view('joueur_points', compact('user'));
+    }
+
+    public function recharge(Request $request)
+    {
+        $request->validate([
+            'montant' => 'required|numeric|min:10', // Minimum 10 DH
+        ]);
+
+        $montant = $request->montant;
+        $points = $montant; // 1 DH = 1 Point
+
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        $checkout_session = Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+                'price_data' => [
+                    'currency' => 'mad', // Moroccan Dirham
+                    'unit_amount' => $montant * 100, // Amount in cents (1 DH = 100 cents)
+                    'product_data' => [
+                        'name' => 'Recharge de ' . $points . ' Points',
+                    ],
+                ],
+                'quantity' => 1,
+            ]],
+            'mode' => 'payment',
+            'success_url' => route('joueur.points.success') . '?session_id={CHECKOUT_SESSION_ID}',
+            'cancel_url' => route('joueur.points.cancel'),
+            'metadata' => [
+                'user_id' => Auth::id(),
+                'montant' => $montant,
+                'points' => $points,
+            ],
+        ]);
+
+        return redirect($checkout_session->url);
+    }
+
+    public function rechargeSuccess(Request $request)
+    {
+        $sessionId = $request->get('session_id');
+
+        if (!$sessionId) {
+            return redirect()->route('joueur.points')->with('error', 'Session invalide.');
+        }
+
+        Stripe::setApiKey(env('STRIPE_SECRET'));
+
+        try {
+            $session = Session::retrieve($sessionId);
+
+            if ($session->payment_status === 'paid') {
+                $userId = $session->metadata->user_id;
+                $montant = $session->metadata->montant;
+                $points = $session->metadata->points;
+
+                // Check if transaction already exists
+                $existingTransaction = Transaction::where('reference', $sessionId)->first();
+
+                if (!$existingTransaction) {
+                    $user = User::find($userId);
+                    $user->pointsCompte += $points;
+                    $user->save();
+
+                    Transaction::create([
+                        'user_id' => $user->id,
+                        'type' => 'recharge',
+                        'montant' => $montant,
+                        'points' => $points,
+                        'reference' => $sessionId,
+                        'statut' => 'reussi',
+                        'transactionnable_id' => $user->id, // Morph to user as it is a direct recharge
+                        'transactionnable_type' => User::class,
+                    ]);
+                }
+
+                return redirect()->route('joueur.points')->with('success', 'Recharge effectuée avec succès ! Vous avez reçu ' . $points . ' points.');
+            }
+        } catch (\Exception $e) {
+            return redirect()->route('joueur.points')->with('error', 'Erreur lors de la validation du paiement : ' . $e->getMessage());
+        }
+
+        return redirect()->route('joueur.points')->with('error', 'Paiement non validé.');
+    }
+
+    public function rechargeCancel()
+    {
+        return redirect()->route('joueur.points')->with('error', 'La recharge a été annulée.');
     }
 }
