@@ -147,8 +147,8 @@
                         Mes réservations
                     </a>
 
-                    <a href="{{ route('joueur.annonces') }}"
-                        class="sidebar-nav-link {{ request()->routeIs('annonces') ? 'active' : '' }}">
+                    <a href="{{ route('annonces.public') }}"
+                        class="sidebar-nav-link {{ request()->routeIs('annonces.public') ? 'active' : '' }}">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -239,7 +239,7 @@
                 <div class="hidden md:flex gap-8 text-sm">
                     <a href="{{ route('accueil') }}" class="public-nav-link">Accueil</a>
                     <a href="{{ route('terrains') }}" class="public-nav-link active">Terrains</a>
-                    <a href="#route('annonces')" class="public-nav-link">Matchs</a>
+                    <a href="{{ route('annonces.public') }}" class="public-nav-link">Matchs</a>
                     <a href="{{ route('accueil') }}#apropos" class="public-nav-link">À propos</a>
                 </div>
                 <div class="flex gap-3 items-center">
