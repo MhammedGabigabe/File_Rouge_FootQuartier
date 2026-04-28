@@ -15,6 +15,7 @@ use App\Http\Controllers\ParticipationController;
 Route::get('/', function() { return redirect()->route('accueil'); });
 Route::get('/terrains', [TerrainController::class, 'index'] )->name('terrains');
 Route::get('/terrains/{id}', [TerrainController::class, 'show'])->name('terrains.show');
+Route::get('/annonces', [AnnonceController::class, 'index'])->name('annonces.public');
 
 Route::middleware('guest.custom')->group(function () {
     Route::get('/accueil', [AccueilController::class, 'index'])->name('accueil');
@@ -75,9 +76,6 @@ Route::middleware('auth')->group(function () {
             ->name('joueur.notifications');
         Route::post('/annonces', [AnnonceController::class, 'store'])
             ->name('annonces.store');
-
-        Route::get('/annonces', [AnnonceController::class, 'index'])
-            ->name('joueur.annonces');
         Route::post('/annonces/{annonce}/rejoindre', [ParticipationController::class, 'store'])
             ->name('participations.store');
         Route::delete('/annonces/{annonce}/quitter', [ParticipationController::class, 'destroy'])
