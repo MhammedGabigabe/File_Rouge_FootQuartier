@@ -17,7 +17,10 @@ class AccueilController extends Controller
             ->get();
 
         $annonces = Annonce::where('statut', 'ouverte')
-            ->with('reservation.terrain', 'organisateur')
+            ->with(['reservation.terrain', 'organisateur'])
+            ->whereHas('reservation', fn($q) =>
+                $q->where('date_debut', '>', now())
+            )
             ->latest()
             ->take(3)
             ->get();
