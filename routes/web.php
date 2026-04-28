@@ -9,6 +9,7 @@ use App\Http\Controllers\AnnonceController;
 use App\Http\Controllers\TerrainController;
 use App\Http\Controllers\JoueurController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\ParticipationController;
 
 
 Route::get('/', function() { return redirect()->route('accueil'); });
@@ -66,7 +67,17 @@ Route::middleware('auth')->group(function () {
             ->name('joueur.historique');
         Route::get('/notifications', [JoueurController::class, 'notifications'])
             ->name('joueur.notifications');
+        Route::post('/annonces', [AnnonceController::class, 'store'])
+            ->name('annonces.store');
+
+        Route::get('/annonces', [AnnonceController::class, 'index'])
+            ->name('joueur.annonces');
+        Route::post('/annonces/{annonce}/rejoindre', [ParticipationController::class, 'store'])
+            ->name('participations.store');
+        Route::delete('/annonces/{annonce}/quitter', [ParticipationController::class, 'destroy'])
+            ->name('participations.destroy');
     });
+
     Route::post('/reservations/payment-intent', [ReservationController::class, 'createPaymentIntent'])
         ->name('reservations.payment-intent');
     Route::post('/reservations/confirm', [ReservationController::class, 'confirmReservation'])
