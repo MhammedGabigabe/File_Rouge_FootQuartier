@@ -251,35 +251,75 @@
             <div class="max-w-6xl mx-auto px-6">
                 <div class="flex justify-between items-center mb-10">
                     <h2 class="text-3xl font-bold text-emerald-600">Matchs disponibles</h2>
-                    <a href="#route('annonces') " class="text-emerald-600 text-sm font-semibold hover:underline">
+                    <a href="{{ route('annonces.public') }}"
+                        class="text-emerald-600 text-sm font-semibold hover:underline">
                         Voir tous →
                     </a>
                 </div>
 
                 <div class="grid md:grid-cols-3 gap-6">
                     @forelse($annonces as $annonce)
+                        @php
+                            $terrain = $annonce->reservation->terrain;
+                            $dateDebut = $annonce->reservation->date_debut;
+                            $placesOccupees = $annonce->places_total - $annonce->places_dispo;
+                            $pct =
+                                $annonce->places_total > 0
+                                    ? round(($placesOccupees / $annonce->places_total) * 100)
+                                    : 0;
+                            $complet = $annonce->places_dispo <= 0;
+                        @endphp
+
                         <div
-                            class="annonce-card bg-white rounded-2xl shadow overflow-hidden border border-gray-100 p-5">
+                            class="annonce-card bg-white rounded-2xl shadow overflow-hidden border border-gray-100 p-5 flex flex-col">
                             <div class="flex justify-between items-start mb-3">
-                                <h3 class="font-bold text-lg">{{ $annonce->reservation->terrain->nom_terrain }}</h3>
-                                <span class="text-xs bg-emerald-50 text-emerald-700 px-2 py-1 rounded-full font-medium">
-                                    {{ $annonce->places_dispo }} place(s)
+                                <h3 class="font-bold text-gray-900 text-lg leading-tight">{{ $terrain->nom_terrain }}
+                                </h3>
+                                <span
+                                    class="text-xs font-semibold px-2.5 py-1 rounded-full flex-shrink-0 ml-2 bg-emerald-50 text-emerald-700">
+                                    Ouverte
                                 </span>
                             </div>
-                            <p class="text-sm text-gray-500 mb-1">
-                                {{ $annonce->reservation->terrain->localisation }}
-                            </p>
-                            <p class="text-sm text-gray-500 mb-1">
-                                {{ $annonce->reservation->date_debut->format('d/m/Y H:i') }}
-                            </p>
-                            <p class="text-sm text-gray-500 mb-4">
-                                Organisé par {{ $annonce->organisateur->nom }}
-                            </p>
-                            <a href="#route('annonces.show', $annonce->id)"
-                                class="block text-center bg-emerald-600 text-white py-2 rounded-lg text-sm hover:bg-emerald-700 transition">
-                                Rejoindre le match
-                            </a>
+
+                            <div class="space-y-1.5 mb-4">
+                                <p class="text-sm text-gray-500 flex items-center gap-1.5">
+                                    {{ $terrain->localisation }}
+                                </p>
+                                <p class="text-sm text-gray-500 flex items-center gap-1.5">
+                                    {{ $dateDebut->translatedFormat('D d M Y') }} — {{ $dateDebut->format('H:i') }}
+                                </p>
+                                <p class="text-sm text-gray-500 flex items-center gap-1.5">
+                                    Organisé par <strong
+                                        class="text-gray-700 ml-1">{{ $annonce->organisateur->nom }}</strong>
+                                </p>
+                            </div>
+
+                            <div class="mb-4 mt-auto">
+                                <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                    <span>{{ $placesOccupees }} / {{ $annonce->places_total }} joueurs</span>
+                                    <span class="{{ $complet ? 'text-red-500' : 'text-emerald-600' }} font-medium">
+                                        {{ $annonce->places_dispo }} place{{ $annonce->places_dispo > 1 ? 's' : '' }}
+                                        restante{{ $annonce->places_dispo > 1 ? 's' : '' }}
+                                    </span>
+                                </div>
+                            </div>
+
+                            @auth
+                                <form method="POST" action="{{ route('participations.store', $annonce->id) }}">
+                                    @csrf
+                                    <button
+                                        class="w-full text-center bg-emerald-600 text-white py-2 rounded-xl text-sm font-semibold hover:bg-emerald-700 transition">
+                                        Rejoindre le match
+                                    </button>
+                                </form>
+                            @else
+                                <a href="{{ route('login') }}"
+                                    class="block text-center bg-gray-200 text-gray-700 py-2 rounded-xl text-sm hover:bg-gray-300 transition font-medium">
+                                    Se connecter pour rejoindre
+                                </a>
+                            @endauth
                         </div>
+
                     @empty
                         <p class="text-gray-500 col-span-3 text-center">Aucun match disponible pour le moment.</p>
                     @endforelse
