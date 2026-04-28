@@ -273,7 +273,8 @@
                             </div>
 
                             @if ($terrain->description_terr)
-                                <p class="text-sm text-gray-600 leading-relaxed mb-3">{{ $terrain->description_terr }}</p>
+                                <p class="text-sm text-gray-600 leading-relaxed mb-3">{{ $terrain->description_terr }}
+                                </p>
                             @endif
 
                             @php
@@ -290,7 +291,8 @@
                                 <div class="flex flex-wrap gap-2 mb-4">
                                     @foreach ($equips as $eq)
                                         @php $eq = is_array($eq) ? $eq[0] : $eq; @endphp
-                                        <span class="badge-equip">{{ $equipsLabels[$eq] ?? ucfirst(str_replace('_', ' ', $eq)) }}</span>
+                                        <span
+                                            class="badge-equip">{{ $equipsLabels[$eq] ?? ucfirst(str_replace('_', ' ', $eq)) }}</span>
                                     @endforeach
                                 </div>
                             @endif
@@ -330,7 +332,9 @@
                 const lat = {{ $terrain->latitude }};
                 const lng = {{ $terrain->longitude }};
 
-                const map = L.map('map', { scrollWheelZoom: false }).setView([lat, lng], 15);
+                const map = L.map('map', {
+                    scrollWheelZoom: false
+                }).setView([lat, lng], 15);
 
                 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     attribution: '© OpenStreetMap'
@@ -343,7 +347,9 @@
                     iconAnchor: [18, 36],
                 });
 
-                L.marker([lat, lng], { icon })
+                L.marker([lat, lng], {
+                        icon
+                    })
                     .addTo(map)
                     .bindPopup(`<strong>{{ $terrain->nom_terrain }}</strong><br>{{ $terrain->localisation }}`)
                     .openPopup();
@@ -356,7 +362,6 @@
         <div id="modal-reservation" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
             <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden">
 
-                {{-- Étape 1 : Choix date / heure --}}
                 <div id="step-datetime" class="p-6 space-y-3">
 
                     <div>
@@ -383,17 +388,20 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Début</label>
+                            <label
+                                class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Début</label>
                             <select id="heure-debut"
                                 class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                 <option value="">-- heure --</option>
                                 @for ($h = 7; $h <= 23; $h++)
-                                    <option value="{{ $h }}">{{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00</option>
+                                    <option value="{{ $h }}">{{ str_pad($h, 2, '0', STR_PAD_LEFT) }}:00
+                                    </option>
                                 @endfor
                             </select>
                         </div>
                         <div>
-                            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Fin</label>
+                            <label
+                                class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-1">Fin</label>
                             <select id="heure-fin"
                                 class="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500">
                                 <option value="">-- heure --</option>
@@ -426,13 +434,13 @@
                     </div>
                 </div>
 
-                {{-- Étape 2 : Formulaire Stripe Elements --}}
                 <div id="step-paiement" class="hidden p-6 space-y-4">
 
                     <div class="flex items-center gap-3 mb-2">
                         <button type="button" id="btn-retour" class="text-gray-400 hover:text-gray-600">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7" />
                             </svg>
                         </button>
                         <h3 class="font-semibold text-gray-800">Paiement sécurisé</h3>
@@ -444,7 +452,8 @@
                         class="hidden bg-red-50 text-red-700 text-sm px-4 py-2.5 rounded-xl border border-red-200"></div>
 
                     <div>
-                        <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-2">Carte bancaire</label>
+                        <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-2">Carte
+                            bancaire</label>
                         <div id="card-element" class="border border-gray-200 rounded-xl px-3 py-3 bg-white"></div>
                     </div>
 
@@ -481,7 +490,9 @@
                     base: {
                         fontSize: '14px',
                         color: '#1f2937',
-                        '::placeholder': { color: '#9ca3af' }
+                        '::placeholder': {
+                            color: '#9ca3af'
+                        }
                     }
                 }
             });
@@ -502,7 +513,8 @@
 
                 function getBlockedHours(dateStr) {
                     const blocked = new Set();
-                    const todayStr = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' +
+                    const todayStr = now.getFullYear() + '-' +
+                        String(now.getMonth() + 1).padStart(2, '0') + '-' +
                         String(now.getDate()).padStart(2, '0');
 
                     if (dateStr === todayStr) {
@@ -511,48 +523,70 @@
 
                     reservationsData.forEach(r => {
                         const dDebut = new Date(r.debut.replace(' ', 'T'));
-                        const dFin = new Date(r.fin.replace(' ', 'T'));
-                        const rDate = dDebut.getFullYear() + '-' + String(dDebut.getMonth() + 1).padStart(2, '0') +
-                            '-' + String(dDebut.getDate()).padStart(2, '0');
+                        const dFin   = new Date(r.fin.replace(' ', 'T'));
+                        const rDate  = dDebut.getFullYear() + '-' +
+                            String(dDebut.getMonth() + 1).padStart(2, '0') + '-' +
+                            String(dDebut.getDate()).padStart(2, '0');
                         if (rDate === dateStr) {
-                            for (let h = dDebut.getHours(); h < dFin.getHours(); h++) blocked.add(h);
+                            for (let h = dDebut.getHours(); h < dFin.getHours(); h++) {
+                                blocked.add(h);
+                            }
                         }
                     });
 
                     return blocked;
                 }
 
+
                 function updateSelects() {
                     if (!selectedDate) return;
-                    const blocked = getBlockedHours(selectedDate);
+
+                    const blocked  = getBlockedHours(selectedDate);
                     const debutSel = document.getElementById('heure-debut');
-                    const finSel = document.getElementById('heure-fin');
+                    const finSel   = document.getElementById('heure-fin');
                     const debutVal = parseInt(debutSel.value);
 
+                    // --- Select Début ---
                     [...debutSel.options].forEach(opt => {
                         const h = parseInt(opt.value);
                         if (!h) return;
-                        opt.disabled = blocked.has(h);
-                        opt.style.color = blocked.has(h) ? '#9ca3af' : '';
+                        const isBlocked = blocked.has(h);
+                        opt.disabled    = isBlocked;
+                        opt.style.color = isBlocked ? '#9ca3af' : '';
                     });
+
+                    // Si la valeur actuellement sélectionnée est maintenant bloquée, on reset
+                    if (debutSel.options[debutSel.selectedIndex]?.disabled) {
+                        debutSel.value = '';
+                    }
+
+                    // --- Select Fin ---
+                    const currentDebut = parseInt(debutSel.value); // relire après éventuel reset
 
                     [...finSel.options].forEach(opt => {
                         const h = parseInt(opt.value);
                         if (!h) return;
-                        let isBlocked = false;
-                        if (debutVal && h > debutVal) {
-                            for (let x = debutVal; x < h; x++) {
-                                if (blocked.has(x)) { isBlocked = true; break; }
+
+                        let isBlocked = !currentDebut || h <= currentDebut;
+
+                        if (!isBlocked) {
+                            // Vérifie que l'intervalle [currentDebut, h[ ne contient aucune heure bloquée
+                            for (let x = currentDebut; x < h; x++) {
+                                if (blocked.has(x)) {
+                                    isBlocked = true;
+                                    break;
+                                }
                             }
-                        } else {
-                            isBlocked = true;
                         }
-                        opt.disabled = isBlocked;
+
+                        opt.disabled    = isBlocked;
                         opt.style.color = isBlocked ? '#9ca3af' : '';
                     });
 
-                    if (debutSel.options[debutSel.selectedIndex]?.disabled) debutSel.value = '';
-                    if (finSel.options[finSel.selectedIndex]?.disabled) finSel.value = '';
+                    // Si la valeur fin sélectionnée est maintenant bloquée, on reset
+                    if (finSel.options[finSel.selectedIndex]?.disabled) {
+                        finSel.value = '';
+                    }
 
                     calcMontant();
                 }
@@ -562,16 +596,16 @@
                     const grid = document.getElementById('days-grid');
                     grid.innerHTML = '';
 
-                    const firstDay = new Date(year, month, 1).getDay();
-                    const offset = firstDay === 0 ? 6 : firstDay - 1;
+                    const firstDay    = new Date(year, month, 1).getDay();
+                    const offset      = firstDay === 0 ? 6 : firstDay - 1;
                     const daysInMonth = new Date(year, month + 1, 0).getDate();
-                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    const today       = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
                     for (let i = 0; i < offset; i++) grid.insertAdjacentHTML('beforeend', '<div></div>');
 
                     for (let d = 1; d <= daysInMonth; d++) {
-                        const date = new Date(year, month, d);
-                        const isPast = date < today;
+                        const date    = new Date(year, month, d);
+                        const isPast  = date < today;
                         const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
                         const isSelected = dateStr === selectedDate;
 
@@ -582,12 +616,13 @@
                             (isPast ? 'text-gray-300 cursor-not-allowed' :
                                 isSelected ? 'bg-emerald-600 text-white font-semibold' :
                                 'hover:bg-emerald-50 text-gray-700 cursor-pointer');
+
                         if (!isPast) {
                             btn.addEventListener('click', () => {
                                 selectedDate = dateStr;
                                 document.getElementById('selected-date').value = dateStr;
-                                document.getElementById('heure-debut').value = '';
-                                document.getElementById('heure-fin').value = '';
+                                document.getElementById('heure-debut').value   = '';
+                                document.getElementById('heure-fin').value     = '';
                                 renderCalendar();
                                 updateSelects();
                             });
@@ -606,9 +641,9 @@
                 });
 
                 function calcMontant() {
-                    const debut = parseInt(document.getElementById('heure-debut').value);
-                    const fin = parseInt(document.getElementById('heure-fin').value);
-                    const errEl = document.getElementById('res-error');
+                    const debut    = parseInt(document.getElementById('heure-debut').value);
+                    const fin      = parseInt(document.getElementById('heure-fin').value);
+                    const errEl    = document.getElementById('res-error');
                     const montantEl = document.getElementById('montant-display');
 
                     errEl.classList.add('hidden');
@@ -622,13 +657,15 @@
                     montantEl.textContent = ((fin - debut) * prix) + ' DH';
                 }
 
+                // Quand on change le début, on recalcule tout (début + fin)
                 document.getElementById('heure-debut').addEventListener('change', () => updateSelects());
+                // Quand on change la fin, on recalcule juste le montant
                 document.getElementById('heure-fin').addEventListener('change', calcMontant);
 
                 document.getElementById('btn-continuer').addEventListener('click', async () => {
                     const debut = parseInt(document.getElementById('heure-debut').value);
-                    const fin = parseInt(document.getElementById('heure-fin').value);
-                    const date = document.getElementById('selected-date').value;
+                    const fin   = parseInt(document.getElementById('heure-fin').value);
+                    const date  = document.getElementById('selected-date').value;
                     const errEl = document.getElementById('res-error');
 
                     errEl.classList.add('hidden');
@@ -644,13 +681,14 @@
                     }
 
                     const debutStr = String(debut).padStart(2, '0') + ':00:00';
-                    const finStr = fin === 24 ? '00:00:00' : String(fin).padStart(2, '0') + ':00:00';
-                    const dateFin = fin === 24 ?
-                        new Date(new Date(date).getTime() + 86400000).toISOString().slice(0, 10) : date;
-                    const montant = (fin - debut) * prix;
+                    const finStr   = fin === 24 ? '00:00:00' : String(fin).padStart(2, '0') + ':00:00';
+                    const dateFin  = fin === 24
+                        ? new Date(new Date(date).getTime() + 86400000).toISOString().slice(0, 10)
+                        : date;
+                    const montant  = (fin - debut) * prix;
 
                     const btn = document.getElementById('btn-continuer');
-                    btn.disabled = true;
+                    btn.disabled    = true;
                     btn.textContent = 'Chargement...';
 
                     try {
@@ -663,8 +701,8 @@
                             body: JSON.stringify({
                                 terrain_id: {{ $terrain->id }},
                                 date_debut: date + ' ' + debutStr,
-                                date_fin: dateFin + ' ' + finStr,
-                                montant: montant,
+                                date_fin:   dateFin + ' ' + finStr,
+                                montant:    montant,
                             }),
                         });
 
@@ -690,7 +728,7 @@
                         errEl.textContent = 'Erreur réseau. Réessayez.';
                         errEl.classList.remove('hidden');
                     } finally {
-                        btn.disabled = false;
+                        btn.disabled    = false;
                         btn.textContent = 'Continuer →';
                     }
                 });
@@ -705,11 +743,11 @@
             });
 
             document.getElementById('btn-payer').addEventListener('click', async () => {
-                const btn = document.getElementById('btn-payer');
+                const btn   = document.getElementById('btn-payer');
                 const label = document.getElementById('btn-payer-label');
                 const errEl = document.getElementById('payment-error');
 
-                btn.disabled = true;
+                btn.disabled    = true;
                 label.textContent = 'Traitement...';
                 errEl.classList.add('hidden');
 
@@ -720,7 +758,7 @@
                 if (error) {
                     errEl.textContent = error.message;
                     errEl.classList.remove('hidden');
-                    btn.disabled = false;
+                    btn.disabled      = false;
                     label.textContent = 'Payer';
                     return;
                 }
@@ -741,7 +779,7 @@
                     } catch (e) {
                         errEl.textContent = 'Erreur lors de la confirmation. Contactez le support.';
                         errEl.classList.remove('hidden');
-                        btn.disabled = false;
+                        btn.disabled      = false;
                         label.textContent = 'Payer';
                     }
                 }
