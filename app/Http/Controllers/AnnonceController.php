@@ -12,6 +12,8 @@ class AnnonceController extends Controller
 {    
     public function index(Request $request)
     {
+        $perPage = 6; 
+
         $annonces = Annonce::where('statut', 'ouverte')
             ->with(['reservation.terrain', 'organisateur', 'participations'])
             ->whereHas('reservation', fn($q) => $q->where('date_debut', '>', now()))
@@ -22,7 +24,7 @@ class AnnonceController extends Controller
                 $q->whereHas('reservation', fn($q2) => $q2->whereDate('date_debut', $d))
             )
             ->latest()
-            ->paginate(9);
+            ->paginate($perPage);
 
         return view('joueur_annonces', compact('annonces'));
     }
