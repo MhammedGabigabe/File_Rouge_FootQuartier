@@ -3,9 +3,11 @@
 
 <head>
     <meta charset="UTF-8">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trouver un match | FootQuartier</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://js.stripe.com/v3/"></script>
     <link
         href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;700;900&family=Inter:wght@400;500;600&display=swap"
         rel="stylesheet">
@@ -328,12 +330,12 @@
                     <div class="flex items-center gap-4">
                         <span class="text-sm text-gray-500">
                             Solde :
-                            <span class="text-emerald-600 font-bold">{{ Auth::user()->pointsCompte }} pts</span>
+                            <span class="text-emerald-600 font-bold solde-display"">{{ Auth::user()->pointsCompte }} pts</span>
                         </span>
-                        <a href="{{ route('joueur.points') }}"
+                        <button onclick="openRechargeModal()"
                             class="px-3 py-1.5 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition">
                             Recharger
-                        </a>
+                        </button>
                     </div>
                 </div>
             @endauth
@@ -531,6 +533,309 @@
         @endguest
 
     </div>
+
+    {{-- Modal Rechargement Points --}}
+    @auth
+        <div id="modal-recharge" class="hidden fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+            <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden" onclick="event.stopPropagation()">
+
+                <div id="step-montant" class="p-6 space-y-5">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-lg font-bold text-gray-900">Recharger mon compte</h3>
+                        <button onclick="closeRechargeModal()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div
+                        class="bg-emerald-50 rounded-xl px-4 py-3 text-sm text-emerald-800 flex justify-between items-center">
+                        <span>Solde actuel</span>
+                        <span class="font-bold text-emerald-700">{{ Auth::user()->pointsCompte }} pts</span>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-2">Montant à
+                            recharger (1 DH = 1 point)</label>
+                        <div class="grid grid-cols-4 gap-2 mb-3">
+                            @foreach ([50, 100, 200, 500] as $montant)
+                                <button type="button" onclick="selectMontant({{ $montant }})"
+                                    data-montant="{{ $montant }}"
+                                    class="montant-chip py-2 text-sm font-semibold border-2 border-gray-200 rounded-xl hover:border-emerald-500 hover:bg-emerald-50 hover:text-emerald-700 transition text-gray-600">
+                                    {{ $montant }} DH
+                                </button>
+                            @endforeach
+                        </div>
+                        <div class="relative">
+                            <input type="number" id="montant-custom" placeholder="Ou saisir un montant (min. 10 DH)"
+                                min="10" max="5000"
+                                class="w-full border border-gray-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent"
+                                oninput="onCustomMontant(this.value)">
+                            <span class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">DH</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-gray-50 rounded-xl px-4 py-3 flex justify-between items-center">
+                        <span class="text-sm text-gray-500">Points à créditer</span>
+                        <span id="points-preview" class="text-xl font-bold text-emerald-600">-- pts</span>
+                    </div>
+
+                    <div id="recharge-error-1"
+                        class="hidden bg-red-50 text-red-700 text-sm px-4 py-2.5 rounded-xl border border-red-200"></div>
+
+                    <div class="flex gap-3">
+                        <button type="button" onclick="closeRechargeModal()"
+                            class="w-1/2 py-3 rounded-xl border border-gray-300 text-gray-600 hover:bg-gray-50 transition text-sm font-medium">
+                            Annuler
+                        </button>
+                        <button type="button" id="btn-recharge-continuer" onclick="initRechargePayment()"
+                            class="w-1/2 flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold hover:bg-emerald-700 transition text-sm">
+                            Continuer →
+                        </button>
+                    </div>
+                </div>
+
+                <div id="step-paiement-recharge" class="hidden p-6 space-y-4">
+
+                    <div class="flex items-center gap-3 mb-2">
+                        <button type="button" onclick="backToMontant()" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 19l-7-7 7-7" />
+                            </svg>
+                        </button>
+                        <h3 class="font-semibold text-gray-800">Paiement sécurisé</h3>
+                    </div>
+
+                    <div id="recap-recharge" class="bg-emerald-50 rounded-xl px-4 py-3 text-sm text-emerald-800"></div>
+
+                    <div id="recharge-error-2"
+                        class="hidden bg-red-50 text-red-700 text-sm px-4 py-2.5 rounded-xl border border-red-200"></div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-gray-400 uppercase tracking-wide block mb-2">Carte
+                            bancaire</label>
+                        <div id="recharge-card-element" class="border border-gray-200 rounded-xl px-3 py-3 bg-white">
+                        </div>
+                    </div>
+
+                    <button type="button" id="btn-recharge-payer" onclick="payRecharge()"
+                        class="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white py-3 rounded-xl font-semibold hover:bg-emerald-700 transition text-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                        </svg>
+                        <span id="btn-recharge-label">Payer et recharger</span>
+                    </button>
+
+                    <p class="text-center text-xs text-gray-400 flex items-center justify-center gap-1">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        Paiement sécurisé par Stripe
+                    </p>
+                </div>
+
+            </div>
+        </div>
+
+        <script>
+            let rechargeStripe = Stripe("{{ config('services.stripe.key') }}");
+            let rechargeElements = rechargeStripe.elements();
+            let rechargeCardElement = null;
+            let rechargeClientSecret = null;
+            let rechargeMontantSelected = null;
+
+            function openRechargeModal() {
+                document.getElementById('modal-recharge').classList.remove('hidden');
+                if (!rechargeCardElement) {
+                    rechargeCardElement = rechargeElements.create('card', {
+                        style: {
+                            base: {
+                                fontSize: '14px',
+                                color: '#1f2937',
+                                '::placeholder': {
+                                    color: '#9ca3af'
+                                }
+                            }
+                        }
+                    });
+                    rechargeCardElement.mount('#recharge-card-element');
+                }
+            }
+
+            function closeRechargeModal() {
+                document.getElementById('modal-recharge').classList.add('hidden');
+                backToMontant();
+                document.querySelectorAll('.montant-chip').forEach(c => c.classList.remove('border-emerald-500',
+                    'bg-emerald-50', 'text-emerald-700'));
+                document.getElementById('montant-custom').value = '';
+                document.getElementById('points-preview').textContent = '-- pts';
+                document.getElementById('recharge-error-1').classList.add('hidden');
+                rechargeMontantSelected = null;
+            }
+
+            function selectMontant(val) {
+                rechargeMontantSelected = val;
+                document.getElementById('montant-custom').value = '';
+                document.getElementById('points-preview').textContent = val + ' pts';
+                document.querySelectorAll('.montant-chip').forEach(c => {
+                    const isActive = parseInt(c.dataset.montant) === parseInt(val);
+                    c.classList.toggle('border-emerald-500', isActive);
+                    c.classList.toggle('bg-emerald-50', isActive);
+                    c.classList.toggle('text-emerald-700', isActive);
+                });
+            }
+
+            function onCustomMontant(val) {
+                document.querySelectorAll('.montant-chip').forEach(c => c.classList.remove('border-emerald-500',
+                    'bg-emerald-50', 'text-emerald-700'));
+                const n = parseInt(val);
+                rechargeMontantSelected = (isNaN(n) || n < 10) ? null : n;
+                document.getElementById('points-preview').textContent = rechargeMontantSelected ? rechargeMontantSelected +
+                    ' pts' : '-- pts';
+            }
+
+            function backToMontant() {
+                document.getElementById('step-paiement-recharge').classList.add('hidden');
+                document.getElementById('step-montant').classList.remove('hidden');
+                document.getElementById('recharge-error-2').classList.add('hidden');
+            }
+
+            async function initRechargePayment() {
+                const errEl = document.getElementById('recharge-error-1');
+                errEl.classList.add('hidden');
+
+                if (!rechargeMontantSelected || rechargeMontantSelected < 10) {
+                    errEl.textContent = 'Veuillez choisir un montant (minimum 10 DH).';
+                    errEl.classList.remove('hidden');
+                    return;
+                }
+
+                const btn = document.getElementById('btn-recharge-continuer');
+                btn.disabled = true;
+                btn.textContent = 'Chargement...';
+
+                try {
+                    const res = await fetch("{{ route('points.payment-intent') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').getAttribute(
+                                'content'),
+                            'Accept': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            montant: rechargeMontantSelected
+                        }),
+                    });
+
+                    const data = await res.json();
+
+                    if (!res.ok) {
+                        errEl.textContent = data.error ?? 'Une erreur est survenue.';
+                        errEl.classList.remove('hidden');
+                        return;
+                    }
+
+                    rechargeClientSecret = data.clientSecret;
+
+                    document.getElementById('recap-recharge').innerHTML =
+                        `Rechargement de <strong>${rechargeMontantSelected} DH</strong><br>
+                 <span class="font-bold text-emerald-700">+${rechargeMontantSelected} points</span> seront crédités sur votre compte.`;
+
+                    document.getElementById('step-montant').classList.add('hidden');
+                    document.getElementById('step-paiement-recharge').classList.remove('hidden');
+
+                } catch (e) {
+                    console.error('Fetch error:', e);
+                    errEl.textContent = 'Erreur réseau. Réessayez.';
+                    errEl.classList.remove('hidden');
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = 'Continuer →';
+                }
+            }
+
+            async function payRecharge() {
+                const btn = document.getElementById('btn-recharge-payer');
+                const label = document.getElementById('btn-recharge-label');
+                const errEl = document.getElementById('recharge-error-2');
+
+                btn.disabled = true;
+                label.textContent = 'Traitement...';
+                errEl.classList.add('hidden');
+
+                const {
+                    paymentIntent,
+                    error
+                } = await rechargeStripe.confirmCardPayment(rechargeClientSecret, {
+                    payment_method: {
+                        card: rechargeCardElement
+                    }
+                });
+
+                if (error) {
+                    errEl.textContent = error.message;
+                    errEl.classList.remove('hidden');
+                    btn.disabled = false;
+                    label.textContent = 'Payer et recharger';
+                    return;
+                }
+
+                if (paymentIntent.status === 'succeeded') {
+                    label.textContent = 'Confirmation...';
+                    try {
+                        const res = await fetch("{{ route('points.confirm') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document.head.querySelector('meta[name="csrf-token"]').getAttribute(
+                                    'content'),
+                                'Accept': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                payment_intent_id: paymentIntent.id
+                            }),
+                        });
+
+                        const data = await res.json();
+
+                        if (data.success) {
+                            // Mettre à jour le solde affiché sans recharger la page
+                            document.querySelectorAll('.solde-display').forEach(el => {
+                                el.textContent = data.nouveauSolde + ' pts';
+                            });
+
+                            closeRechargeModal();
+
+                            // Message de succès temporaire
+                            const flash = document.createElement('div');
+                            flash.className =
+                                'fixed top-5 right-5 bg-emerald-600 text-white px-5 py-3 rounded-xl shadow-lg text-sm font-medium z-50';
+                            flash.textContent = `+${data.pointsAjoutes} points ajoutés avec succès !`;
+                            document.body.appendChild(flash);
+                            setTimeout(() => flash.remove(), 4000);
+                        }
+
+                    } catch (e) {
+                        errEl.textContent = 'Erreur lors de la confirmation. Contactez le support.';
+                        errEl.classList.remove('hidden');
+                        btn.disabled = false;
+                        label.textContent = 'Payer et recharger';
+                    }
+                }
+            }
+
+            document.getElementById('modal-recharge').addEventListener('click', function(e) {
+                if (e.target === this) closeRechargeModal();
+            });
+        </script>
+    @endauth
 
     <div id="modal-overlay" onclick="closeModal(event)">
         <div id="modal-box" onclick="event.stopPropagation()">
