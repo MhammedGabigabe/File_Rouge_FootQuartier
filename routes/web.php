@@ -64,14 +64,7 @@ Route::middleware('auth')->group(function () {
             ->name('joueur.reservations');
         Route::get('/participations', [JoueurController::class, 'participations'])
             ->name('joueur.participations');
-        Route::get('/points', [JoueurController::class, 'points'])
-            ->name('joueur.points');
-        Route::post('/points/recharge', [JoueurController::class, 'recharge'])
-            ->name('joueur.points.recharge');
-        Route::get('/points/success', [JoueurController::class, 'rechargeSuccess'])
-            ->name('joueur.points.success');
-        Route::get('/points/cancel', [JoueurController::class, 'rechargeCancel'])
-            ->name('joueur.points.cancel');
+
         Route::get('/historique', [JoueurController::class, 'historique'])
             ->name('joueur.historique');
         Route::get('/notifications', [JoueurController::class, 'notifications'])
