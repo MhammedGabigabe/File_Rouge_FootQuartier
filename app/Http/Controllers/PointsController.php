@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use App\Models\Transaction;
+use App\Models\User;
 
 class PointsController extends Controller
 {
@@ -47,6 +48,17 @@ class PointsController extends Controller
         $points = (int) $intent->metadata['points'];
         $user = auth()->user();
         $user->increment('pointsCompte', $points);
+
+        Transaction::create([
+            'user_id' => $user->id,
+            'type' => 'recharge',
+            'montant' => $points,
+            'points' => $points,
+            'reference' => $intent->id,
+            'statut' => 'reussi',
+            'transactionnable_id' => $user->id,
+            'transactionnable_type' => 'user',
+        ]);
 
         return response()->json([
             'success' => true,
