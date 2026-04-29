@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Annonce;
 use App\Models\Participation;
+use App\Models\Transaction;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -68,6 +69,16 @@ class ParticipationController extends Controller
                 ]);
             }
 
+            Transaction::create([
+                'user_id' => $user->id,
+                'type' => 'paiement_participation',
+                'montant' => 0,
+                'points' => -$coutParPlace,
+                'statut' => 'reussi',
+                'transactionnable_id' => $participation->id,
+                'transactionnable_type' => 'participation',
+            ]);
+
             $annonce->decrement('places_dispo');
 
             if ($annonce->fresh()->places_dispo <= 0) {
@@ -112,6 +123,17 @@ class ParticipationController extends Controller
         DB::transaction(function () use ($annonce, $user, $participation) {
             $user->increment('pointsCompte', $participation->points_payes);
             $annonce->organisateur->decrement('pointsCompte', $participation->points_payes);
+
+            Transaction::create([
+                'user_id' => $user->id,
+                'type' => 'remboursement',
+                'montant' => 0,
+                'points' => $participation->points_payes,
+                'statut' => 'reussi',
+                'transactionnable_id' => $participation->id,
+                'transactionnable_type' => Participation::class,
+            ]);
+
             $participation->update(['statut' => 'retiree']);
             $annonce->increment('places_dispo');
 
