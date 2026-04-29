@@ -9,18 +9,28 @@ use App\Models\Reservation;
 use Illuminate\Support\Facades\Auth;
 
 class AnnonceController extends Controller
-{    
+{
     public function index(Request $request)
     {
-        $perPage = 6; 
+        $perPage = 6;
 
         $annonces = Annonce::where('statut', 'ouverte')
-            ->with(['reservation.terrain', 'organisateur', 'participations'])
+            ->with([
+                'reservation.terrain',
+                'organisateur',
+                'participations' => function ($q) {
+                    $q->where('statut', 'confirmee');
+                }
+            ])
             ->whereHas('reservation', fn($q) => $q->where('date_debut', '>', now()))
-            ->when($request->ville, fn($q, $v) =>
+            ->when(
+                $request->ville,
+                fn($q, $v) =>
                 $q->whereHas('reservation.terrain', fn($q2) => $q2->where('localisation', 'like', "%$v%"))
             )
-            ->when($request->date, fn($q, $d) =>
+            ->when(
+                $request->date,
+                fn($q, $d) =>
                 $q->whereHas('reservation', fn($q2) => $q2->whereDate('date_debut', $d))
             )
             ->latest()
@@ -37,7 +47,7 @@ class AnnonceController extends Controller
     {
         $request->validate([
             'reservation_id' => ['required', 'exists:reservations,id'],
-            'places_total'   => ['required', 'integer', 'min:2', 'max:22'],
+            'places_total' => ['required', 'integer', 'min:2', 'max:22'],
         ]);
 
         $reservation = Reservation::findOrFail($request->reservation_id);
@@ -60,10 +70,10 @@ class AnnonceController extends Controller
 
         Annonce::create([
             'reservation_id' => $reservation->id,
-            'user_id'        => Auth::id(),
-            'places_total'   => $request->places_total,
-            'places_dispo'   => $request->places_total - 1,
-            'statut'         => 'ouverte',
+            'user_id' => Auth::id(),
+            'places_total' => $request->places_total,
+            'places_dispo' => $request->places_total - 1,
+            'statut' => 'ouverte',
         ]);
 
         return back()->with('success', 'Votre annonce a été publiée avec succès.');
