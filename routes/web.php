@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PointsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
@@ -12,8 +13,9 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\ParticipationController;
 
 
-Route::get('/', function() { return redirect()->route('accueil'); });
-Route::get('/terrains', [TerrainController::class, 'index'] )->name('terrains');
+Route::get('/', function () {
+    return redirect()->route('accueil'); });
+Route::get('/terrains', [TerrainController::class, 'index'])->name('terrains');
 Route::get('/terrains/{id}', [TerrainController::class, 'show'])->name('terrains.show');
 Route::get('/annonces', [AnnonceController::class, 'index'])->name('annonces.public');
 
@@ -40,7 +42,7 @@ Route::middleware('auth')->group(function () {
             ->name('admin.user.toggle');
         Route::post('/user/{id}/approve', [AdminController::class, 'approve'])
             ->name('admin.user.approve');
-    });    
+    });
 
     Route::middleware('isModerateur')->prefix('moderateur')->group(function () {
         Route::get('/dashboard', [ModerateurController::class, 'dashboard'])
@@ -52,7 +54,7 @@ Route::middleware('auth')->group(function () {
         Route::post('/mesterrains', [ModerateurController::class, 'store'])
             ->name('moderateur.terrains.store');
         Route::put('/moderateur/terrains/{id}', [ModerateurController::class, 'update'])
-            ->name('moderateur.terrains.update');    
+            ->name('moderateur.terrains.update');
     });
 
     Route::middleware('isJoueur')->prefix('joueur')->group(function () {
@@ -80,6 +82,11 @@ Route::middleware('auth')->group(function () {
             ->name('participations.store');
         Route::delete('/annonces/{annonce}/quitter', [ParticipationController::class, 'destroy'])
             ->name('participations.destroy');
+
+        Route::post('/points/payment-intent', [PointsController::class, 'paymentIntent'])
+            ->name('points.payment-intent');
+        Route::post('/points/confirm', [PointsController::class, 'confirm'])
+            ->name('points.confirm');
     });
 
     Route::post('/reservations/payment-intent', [ReservationController::class, 'createPaymentIntent'])
