@@ -323,7 +323,7 @@
         @auth ml-64 @endauth
         @guest pt-24 @endguest">
 
-        <main class="p-6 pb-16">
+        <main class="p-4 pb-16">
 
             @auth
                 <div class="flex justify-end mb-10">
@@ -341,8 +341,7 @@
                 </div>
             @endauth
 
-            <div class="mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">Trouver un match</h2>
+            <div class="mb-4">
                 <p class="text-gray-500 text-sm mt-1">Rejoignez une annonce ouverte et complétez une équipe près de
                     chez vous.</p>
             </div>
@@ -858,33 +857,18 @@
 
             <div class="bg-emerald-50 rounded-xl p-4 mb-5 space-y-2">
                 <div class="flex gap-2 text-sm">
-                    <svg class="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M3 12l2-2m0 0l7-7 7 7" />
-                    </svg>
                     <div>
                         <span class="text-gray-500">Terrain :</span>
                         <strong id="modal-terrain" class="text-gray-800 ml-1"></strong>
                     </div>
                 </div>
                 <div class="flex gap-2 text-sm">
-                    <svg class="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M8 7V3m8 4V3m-9 8h10" />
-                    </svg>
                     <div>
                         <span class="text-gray-500">Date :</span>
                         <strong id="modal-date" class="text-gray-800 ml-1"></strong>
                     </div>
                 </div>
                 <div class="flex gap-2 text-sm">
-                    <svg class="w-4 h-4 text-emerald-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor"
-                        viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857" />
-                    </svg>
                     <div>
                         <span class="text-gray-500">Places restantes :</span>
                         <strong id="modal-places" class="text-emerald-700 ml-1"></strong>
