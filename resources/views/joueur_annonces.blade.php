@@ -330,7 +330,8 @@
                     <div class="flex items-center gap-4">
                         <span class="text-sm text-gray-500">
                             Solde :
-                            <span class="text-emerald-600 font-bold solde-display"">{{ Auth::user()->pointsCompte }} pts</span>
+                            <span class="text-emerald-600 font-bold solde-display"">{{ Auth::user()->pointsCompte }}
+                                pts</span>
                         </span>
                         <button onclick="openRechargeModal()"
                             class="px-3 py-1.5 bg-emerald-600 text-white text-sm rounded-lg hover:bg-emerald-700 transition">
@@ -409,6 +410,8 @@
                             'fermee' => 'badge-fermee',
                             default => 'badge-complete',
                         };
+                        $coutParPlace = round($terrain->prix / ($terrain->capacite * 2));
+
                     @endphp
 
                     <div
@@ -432,6 +435,10 @@
                             <p class="text-sm text-gray-500 flex items-center gap-1.5">
                                 Organisé par <strong
                                     class="text-gray-700 ml-1">{{ $annonce->organisateur->nom }}</strong>
+                            </p>
+                            <p class="text-sm text-gray-500 flex items-center gap-1.5">
+                                <span class="font-semibold text-emerald-600">{{ $coutParPlace }} pts</span>
+                                <span class="text-gray-400">/ place</span>
                             </p>
                         </div>
 
