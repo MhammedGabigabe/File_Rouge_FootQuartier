@@ -18,7 +18,7 @@ class AnnonceController extends Controller
             ->with(['reservation.terrain', 'organisateur', 'participations'])
             ->whereHas('reservation', fn($q) => $q->where('date_debut', '>', now()))
             ->when($request->ville, fn($q, $v) =>
-                $q->whereHas('reservation.terrain', fn($q2) => $q2->where('ville', 'like', "%$v%"))
+                $q->whereHas('reservation.terrain', fn($q2) => $q2->where('localisation', 'like', "%$v%"))
             )
             ->when($request->date, fn($q, $d) =>
                 $q->whereHas('reservation', fn($q2) => $q2->whereDate('date_debut', $d))
