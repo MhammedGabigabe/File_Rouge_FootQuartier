@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Stripe\Stripe;
 use Stripe\Checkout\Session;
 use App\Models\Transaction;
+
 
 class JoueurController extends Controller
 {
@@ -19,7 +19,7 @@ class JoueurController extends Controller
             return redirect()->route('connexion')
                 ->withErrors(['email' => 'Votre compte a été banni.']);
         }
-        
+
         $user = Auth::user();
 
         $reservationsCount = $user->reservations()->where('statut', 'confirmee')->count();
@@ -40,8 +40,10 @@ class JoueurController extends Controller
             ->take(3)->get();
 
         return view('joueur_dashboard', compact(
-            'reservationsCount', 'participationsCount',
-            'prochainesReservations', 'prochainesParticipations'
+            'reservationsCount',
+            'participationsCount',
+            'prochainesReservations',
+            'prochainesParticipations'
         ));
     }
 
@@ -52,9 +54,8 @@ class JoueurController extends Controller
             ->with('transactionnable')
             ->when($request->type, function ($q) use ($request) {
                 if ($request->type === 'remboursement') {
-                    // Remboursements liés aux participations uniquement
                     $q->where('type', 'remboursement')
-                    ->where('transactionnable_type', 'App\\Models\\Participation');
+                        ->where('transactionnable_type', 'App\\Models\\Participation');
                 } else {
                     $q->where('type', $request->type);
                 }
@@ -77,46 +78,17 @@ class JoueurController extends Controller
         return view('joueur_reservations', compact('reservations'));
     }
 
-    public function points()
+    public function participations()
     {
-        $user = Auth::user();
-        return view('joueur_points', compact('user'));
-    }
+        $participations = Auth::user()
+            ->participations()
+            ->with('annonce.reservation.terrain', 'annonce.organisateur')
+            ->where('statut', 'confirmee')
+            ->whereHas('annonce.reservation', fn($q) => $q->where('date_debut', '>=', now()))
+            ->orderByDesc('created_at')
+            ->paginate(6);
 
-    public function recharge(Request $request)
-    {
-        $request->validate([
-            'montant' => 'required|numeric|min:10', // Minimum 10 DH
-        ]);
-
-        $montant = $request->montant;
-        $points = $montant; // 1 DH = 1 Point
-
-        Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        $checkout_session = Session::create([
-            'payment_method_types' => ['card'],
-            'line_items' => [[
-                'price_data' => [
-                    'currency' => 'mad', // Moroccan Dirham
-                    'unit_amount' => $montant * 100, // Amount in cents (1 DH = 100 cents)
-                    'product_data' => [
-                        'name' => 'Recharge de ' . $points . ' Points',
-                    ],
-                ],
-                'quantity' => 1,
-            ]],
-            'mode' => 'payment',
-            'success_url' => route('joueur.points.success') . '?session_id={CHECKOUT_SESSION_ID}',
-            'cancel_url' => route('joueur.points.cancel'),
-            'metadata' => [
-                'user_id' => Auth::id(),
-                'montant' => $montant,
-                'points' => $points,
-            ],
-        ]);
-
-        return redirect($checkout_session->url);
+        return view('joueur_participations', compact('participations'));
     }
 
     public function rechargeSuccess(Request $request)
@@ -137,11 +109,10 @@ class JoueurController extends Controller
                 $montant = $session->metadata->montant;
                 $points = $session->metadata->points;
 
-                // Check if transaction already exists
                 $existingTransaction = Transaction::where('reference', $sessionId)->first();
 
                 if (!$existingTransaction) {
-                    $user = User::find($userId);
+                    $user = \App\Models\User::find($userId);
                     $user->pointsCompte += $points;
                     $user->save();
 
@@ -152,8 +123,8 @@ class JoueurController extends Controller
                         'points' => $points,
                         'reference' => $sessionId,
                         'statut' => 'reussi',
-                        'transactionnable_id' => $user->id, // Morph to user as it is a direct recharge
-                        'transactionnable_type' => User::class,
+                        'transactionnable_id' => $user->id,
+                        'transactionnable_type' => \App\Models\User::class,
                     ]);
                 }
 
