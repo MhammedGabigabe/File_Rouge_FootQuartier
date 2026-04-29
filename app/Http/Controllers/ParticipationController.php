@@ -61,13 +61,14 @@ class ParticipationController extends Controller
                     'statut' => 'confirmee',
                 ]);
             } else {
-                Participation::create([
+                $participation = Participation::create([
                     'annonce_id' => $annonce->id,
                     'user_id' => $user->id,
                     'points_payes' => $coutParPlace,
                     'statut' => 'confirmee',
                 ]);
             }
+
 
             Transaction::create([
                 'user_id' => $user->id,
