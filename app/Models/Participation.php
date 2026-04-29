@@ -11,9 +11,9 @@ use App\Models\Transaction;
 class Participation extends Model
 {
     protected $fillable = [
-        'annonce_id', 
+        'annonce_id',
         'user_id',
-        'points_payes', 
+        'points_payes',
         'statut',
     ];
 
@@ -34,7 +34,7 @@ class Participation extends Model
 
     public function peutSeRetirer(): bool
     {
-        $dateDebut = $this->annonce->reservation->date_debut;
+        $dateDebut = Carbon::parse($this->annonce->reservation->date_debut);
         return $this->statut === 'confirmee'
             && Carbon::now()->diffInHours($dateDebut, false) > 4;
     }
