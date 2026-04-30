@@ -473,8 +473,7 @@
 
         <script src="https://js.stripe.com/v3/"></script>
         <script>
-            const reservationsData = @json($reservations->map(fn($r) => ['debut' => $r->date_debut, 'fin' => $r->date_fin]));
-
+            const reservationsData = @json($reservations);
             const stripe = Stripe("{{ config('services.stripe.key') }}");
             const elements = stripe.elements();
             const cardElement = elements.create('card', {
@@ -514,13 +513,8 @@
                     }
 
                     reservationsData.forEach(r => {
-                        const dDebut = new Date(r.debut.replace(' ', 'T'));
-                        const dFin   = new Date(r.fin.replace(' ', 'T'));
-                        const rDate  = dDebut.getFullYear() + '-' +
-                            String(dDebut.getMonth() + 1).padStart(2, '0') + '-' +
-                            String(dDebut.getDate()).padStart(2, '0');
-                        if (rDate === dateStr) {
-                            for (let h = dDebut.getHours(); h < dFin.getHours(); h++) {
+                        if (r.date === dateStr) {
+                            for (let h = r.heure_debut; h < r.heure_fin; h++) {
                                 blocked.add(h);
                             }
                         }
@@ -533,9 +527,9 @@
                 function updateSelects() {
                     if (!selectedDate) return;
 
-                    const blocked  = getBlockedHours(selectedDate);
+                    const blocked = getBlockedHours(selectedDate);
                     const debutSel = document.getElementById('heure-debut');
-                    const finSel   = document.getElementById('heure-fin');
+                    const finSel = document.getElementById('heure-fin');
                     const debutVal = parseInt(debutSel.value);
 
                     // --- Select Début ---
@@ -543,7 +537,7 @@
                         const h = parseInt(opt.value);
                         if (!h) return;
                         const isBlocked = blocked.has(h);
-                        opt.disabled    = isBlocked;
+                        opt.disabled = isBlocked;
                         opt.style.color = isBlocked ? '#9ca3af' : '';
                     });
 
@@ -571,7 +565,7 @@
                             }
                         }
 
-                        opt.disabled    = isBlocked;
+                        opt.disabled = isBlocked;
                         opt.style.color = isBlocked ? '#9ca3af' : '';
                     });
 
@@ -588,16 +582,16 @@
                     const grid = document.getElementById('days-grid');
                     grid.innerHTML = '';
 
-                    const firstDay    = new Date(year, month, 1).getDay();
-                    const offset      = firstDay === 0 ? 6 : firstDay - 1;
+                    const firstDay = new Date(year, month, 1).getDay();
+                    const offset = firstDay === 0 ? 6 : firstDay - 1;
                     const daysInMonth = new Date(year, month + 1, 0).getDate();
-                    const today       = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
                     for (let i = 0; i < offset; i++) grid.insertAdjacentHTML('beforeend', '<div></div>');
 
                     for (let d = 1; d <= daysInMonth; d++) {
-                        const date    = new Date(year, month, d);
-                        const isPast  = date < today;
+                        const date = new Date(year, month, d);
+                        const isPast = date < today;
                         const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
                         const isSelected = dateStr === selectedDate;
 
@@ -613,8 +607,8 @@
                             btn.addEventListener('click', () => {
                                 selectedDate = dateStr;
                                 document.getElementById('selected-date').value = dateStr;
-                                document.getElementById('heure-debut').value   = '';
-                                document.getElementById('heure-fin').value     = '';
+                                document.getElementById('heure-debut').value = '';
+                                document.getElementById('heure-fin').value = '';
                                 renderCalendar();
                                 updateSelects();
                             });
@@ -624,22 +618,31 @@
                 }
 
                 document.getElementById('prev-month').addEventListener('click', () => {
-                    if (--month < 0) { month = 11; year--; }
+                    if (--month < 0) {
+                        month = 11;
+                        year--;
+                    }
                     renderCalendar();
                 });
                 document.getElementById('next-month').addEventListener('click', () => {
-                    if (++month > 11) { month = 0; year++; }
+                    if (++month > 11) {
+                        month = 0;
+                        year++;
+                    }
                     renderCalendar();
                 });
 
                 function calcMontant() {
-                    const debut    = parseInt(document.getElementById('heure-debut').value);
-                    const fin      = parseInt(document.getElementById('heure-fin').value);
-                    const errEl    = document.getElementById('res-error');
+                    const debut = parseInt(document.getElementById('heure-debut').value);
+                    const fin = parseInt(document.getElementById('heure-fin').value);
+                    const errEl = document.getElementById('res-error');
                     const montantEl = document.getElementById('montant-display');
 
                     errEl.classList.add('hidden');
-                    if (!debut || !fin) { montantEl.textContent = '-- DH'; return; }
+                    if (!debut || !fin) {
+                        montantEl.textContent = '-- DH';
+                        return;
+                    }
                     if (fin <= debut) {
                         errEl.textContent = "L'heure de fin doit être après l'heure de début.";
                         errEl.classList.remove('hidden');
@@ -656,8 +659,8 @@
 
                 document.getElementById('btn-continuer').addEventListener('click', async () => {
                     const debut = parseInt(document.getElementById('heure-debut').value);
-                    const fin   = parseInt(document.getElementById('heure-fin').value);
-                    const date  = document.getElementById('selected-date').value;
+                    const fin = parseInt(document.getElementById('heure-fin').value);
+                    const date = document.getElementById('selected-date').value;
                     const errEl = document.getElementById('res-error');
 
                     errEl.classList.add('hidden');
@@ -673,14 +676,14 @@
                     }
 
                     const debutStr = String(debut).padStart(2, '0') + ':00:00';
-                    const finStr   = fin === 24 ? '00:00:00' : String(fin).padStart(2, '0') + ':00:00';
-                    const dateFin  = fin === 24
-                        ? new Date(new Date(date).getTime() + 86400000).toISOString().slice(0, 10)
-                        : date;
-                    const montant  = (fin - debut) * prix;
+                    const finStr = fin === 24 ? '00:00:00' : String(fin).padStart(2, '0') + ':00:00';
+                    const dateFin = fin === 24 ?
+                        new Date(new Date(date).getTime() + 86400000).toISOString().slice(0, 10) :
+                        date;
+                    const montant = (fin - debut) * prix;
 
                     const btn = document.getElementById('btn-continuer');
-                    btn.disabled    = true;
+                    btn.disabled = true;
                     btn.textContent = 'Chargement...';
 
                     try {
@@ -688,13 +691,14 @@
                             method: 'POST',
                             headers: {
                                 'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                    .content,
                             },
                             body: JSON.stringify({
                                 terrain_id: {{ $terrain->id }},
                                 date_debut: date + ' ' + debutStr,
-                                date_fin:   dateFin + ' ' + finStr,
-                                montant:    montant,
+                                date_fin: dateFin + ' ' + finStr,
+                                montant: montant,
                             }),
                         });
 
@@ -720,7 +724,7 @@
                         errEl.textContent = 'Erreur réseau. Réessayez.';
                         errEl.classList.remove('hidden');
                     } finally {
-                        btn.disabled    = false;
+                        btn.disabled = false;
                         btn.textContent = 'Continuer →';
                     }
                 });
@@ -735,22 +739,27 @@
             });
 
             document.getElementById('btn-payer').addEventListener('click', async () => {
-                const btn   = document.getElementById('btn-payer');
+                const btn = document.getElementById('btn-payer');
                 const label = document.getElementById('btn-payer-label');
                 const errEl = document.getElementById('payment-error');
 
-                btn.disabled    = true;
+                btn.disabled = true;
                 label.textContent = 'Traitement...';
                 errEl.classList.add('hidden');
 
-                const { paymentIntent, error } = await stripe.confirmCardPayment(clientSecret, {
-                    payment_method: { card: cardElement }
+                const {
+                    paymentIntent,
+                    error
+                } = await stripe.confirmCardPayment(clientSecret, {
+                    payment_method: {
+                        card: cardElement
+                    }
                 });
 
                 if (error) {
                     errEl.textContent = error.message;
                     errEl.classList.remove('hidden');
-                    btn.disabled      = false;
+                    btn.disabled = false;
                     label.textContent = 'Payer';
                     return;
                 }
@@ -764,14 +773,16 @@
                                 'Content-Type': 'application/json',
                                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
                             },
-                            body: JSON.stringify({ payment_intent_id: paymentIntent.id }),
+                            body: JSON.stringify({
+                                payment_intent_id: paymentIntent.id
+                            }),
                         });
                         const data = await res.json();
                         if (data.redirect) window.location.href = data.redirect;
                     } catch (e) {
                         errEl.textContent = 'Erreur lors de la confirmation. Contactez le support.';
                         errEl.classList.remove('hidden');
-                        btn.disabled      = false;
+                        btn.disabled = false;
                         label.textContent = 'Payer';
                     }
                 }
