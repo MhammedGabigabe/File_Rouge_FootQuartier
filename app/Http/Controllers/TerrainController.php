@@ -17,7 +17,9 @@ class TerrainController extends Controller
         $terrains = Terrain::query()
             ->when($request->localisation, fn($q, $v) => $q->where('localisation', 'like', "%$v%"))
             ->when($request->capacite, fn($q, $v) => $q->where('capacite', $v))
-            ->when($request->equipement, fn($q, $v) =>
+            ->when(
+                $request->equipement,
+                fn($q, $v) =>
                 $q->whereHas('equipements', fn($eq) => $eq->where('nom', $v))
             )
             ->withCount('avis')
@@ -31,13 +33,18 @@ class TerrainController extends Controller
     public function show($id)
     {
         $terrain = Terrain::withAvg('avis', 'note')
-                        ->withCount('avis')
-                        ->with(['equipements', 'avis.joueur'])
-                        ->findOrFail($id);
+            ->withCount('avis')
+            ->with(['equipements', 'avis.joueur'])
+            ->findOrFail($id);
 
         $reservations = Reservation::where('terrain_id', $id)
-                            ->where('statut', '!=', 'annulee')
-                            ->get(['date_debut', 'date_fin']);                
+            ->whereIn('statut', ['confirmee', 'en_attente'])
+            ->get()
+            ->map(fn($r) => [
+                'date' => $r->date_debut->format('Y-m-d'),
+                'heure_debut' => (int) $r->date_debut->format('H'),
+                'heure_fin' => (int) $r->date_fin->format('H'),
+            ]);
 
         return view('terrains_show', compact('terrain', 'reservations'));
     }
