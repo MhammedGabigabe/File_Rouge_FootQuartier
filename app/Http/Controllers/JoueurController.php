@@ -86,7 +86,7 @@ class JoueurController extends Controller
             ->where('statut', 'confirmee')
             ->whereHas('annonce.reservation', fn($q) => $q->where('date_debut', '>=', now()))
             ->orderByDesc('created_at')
-            ->paginate(6);
+            ->paginate(3);
 
         return view('joueur_participations', compact('participations'));
     }
