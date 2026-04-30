@@ -83,7 +83,8 @@
                     Mes réservations
                 </a>
 
-                <a href="{{ route('annonces.public') }}" class="nav-link {{ request()->routeIs('annonces.public') ? 'active' : '' }}">
+                <a href="{{ route('annonces.public') }}"
+                    class="nav-link {{ request()->routeIs('annonces.public') ? 'active' : '' }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -209,8 +210,10 @@
                                 <div class="flex items-start">
 
                                     <div>
-                                        <p class="font-semibold text-gray-800">{{ $reservation->terrain->nom_terrain }}</p>
-                                        <p class="text-sm text-gray-400 mt-0.5">{{ $reservation->terrain->localisation }}
+                                        <p class="font-semibold text-gray-800">
+                                            {{ $reservation->terrain->nom_terrain }}</p>
+                                        <p class="text-sm text-gray-400 mt-0.5">
+                                            {{ $reservation->terrain->localisation }}
                                         </p>
                                         <div class="flex items-center gap-3 mt-2 text-sm text-gray-500">
                                             <span>
@@ -262,9 +265,9 @@
                                                 Publier une annonce de match
                                             </label> <select name="places_total"
                                                 class="text-sm border border-gray-200 rounded-lg px-3 py-1.5 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400">
-                                                @for ($i = 1; $i <= 22; $i++)
-                                                    <option value="{{ $i }}">{{ $i }} joueurs
-                                                    </option>
+                                                @for ($i = 1; $i <= $reservation->terrain->capacite * 2; $i++)
+                                                    <option value="{{ $i }}">{{ $i }}
+                                                        joueur{{ $i > 1 ? 's' : '' }}</option>
                                                 @endfor
                                             </select>
                                             <button type="submit"
@@ -278,7 +281,7 @@
                                         <span class="w-2 h-2 rounded-full bg-emerald-500 flex-shrink-0"></span>
                                         <p class="text-sm text-emerald-600 font-medium">
                                             Annonce publiée —
-                                            {{ $reservation->annonce->places_dispo }} place(s) restante(s) sur
+                                            {{ $reservation->annonce->places_dispo }} place(s) disponible(s) sur
                                             {{ $reservation->annonce->places_total }}
                                         </p>
                                         @if ($reservation->annonce->statut === 'complete')
