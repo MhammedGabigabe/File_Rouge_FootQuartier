@@ -57,7 +57,7 @@
                 @error('password')
                     <p class="text-red-500 text-sm">{{ $message }}</p>
                 @enderror
-                @if (\App\Models\User::count() > 1)
+                @if (\App\Models\User::count() > 0)
                     <select name="role"
                         class="w-full px-4 py-3 rounded-lg border border-gray-300 bg-white focus:ring-2 focus:ring-emerald-400 focus:outline-none">
 
