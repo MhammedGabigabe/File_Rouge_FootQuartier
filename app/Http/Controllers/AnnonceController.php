@@ -47,7 +47,7 @@ class AnnonceController extends Controller
     {
         $request->validate([
             'reservation_id' => ['required', 'exists:reservations,id'],
-            'places_total' => ['required', 'integer', 'min:2', 'max:22'],
+            'places_total' => ['required', 'integer', 'min:1', 'max:22'],
         ]);
 
         $reservation = Reservation::findOrFail($request->reservation_id);
@@ -67,12 +67,12 @@ class AnnonceController extends Controller
                 'reservation_id' => 'Impossible de publier une annonce moins de 2h avant le match.'
             ]);
         }
-
+        
         Annonce::create([
             'reservation_id' => $reservation->id,
             'user_id' => Auth::id(),
             'places_total' => $request->places_total,
-            'places_dispo' => $request->places_total - 1,
+            'places_dispo' => $request->places_total,
             'statut' => 'ouverte',
         ]);
 
