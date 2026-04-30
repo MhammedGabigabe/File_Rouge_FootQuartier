@@ -123,7 +123,6 @@
                                 <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Date</th>
                                 <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Type</th>
                                 <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Détail</th>
-                                <th class="text-left px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Référence</th>
                                 <th class="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Montant</th>
                                 <th class="text-right px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Points</th>
                                 <th class="text-center px-5 py-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">Statut</th>
@@ -183,10 +182,6 @@
                                         @else
                                             <span class="text-gray-300">—</span>
                                         @endif
-                                    </td>
-
-                                    <td class="px-5 py-4 text-gray-400 font-mono text-xs">
-                                        {{ $tx->reference ?? '—' }}
                                     </td>
 
                                     <td class="px-5 py-4 text-right font-semibold">
