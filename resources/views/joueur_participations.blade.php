@@ -92,9 +92,9 @@
     </aside>
 
     <div class="flex-1 ml-64 overflow-y-auto">
-        <main class="p-6 pb-16">
+        <main class="p-10 ">
 
-            <div class="flex justify-between items-center mb-8">
+            <div class="flex justify-between items-center mb-16">
                 <div>
                     <h2 class="text-2xl font-bold text-gray-900">Mes participations</h2>
                     <p class="text-gray-500 text-sm mt-1">Vos matchs à venir en tant que participant.</p>
