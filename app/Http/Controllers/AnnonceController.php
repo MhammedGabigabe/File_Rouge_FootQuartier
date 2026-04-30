@@ -12,7 +12,7 @@ class AnnonceController extends Controller
 {
     public function index(Request $request)
     {
-        $perPage = 6;
+        $perPage = 3;
 
         $annonces = Annonce::where('statut', 'ouverte')
             ->with([
