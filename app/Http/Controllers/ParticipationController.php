@@ -87,6 +87,16 @@ class ParticipationController extends Controller
             }
 
             $annonce->organisateur->increment('pointsCompte', $coutParPlace);
+
+            Transaction::create([
+                'user_id' => $annonce->user_id,
+                'type' => 'remboursement',
+                'montant' => 0,
+                'points' => $coutParPlace,
+                'statut' => 'reussi',
+                'transactionnable_id' => $participation->id,
+                'transactionnable_type' => Participation::class,
+            ]);
         });
 
         return back()->with('success', "Participation confirmée ! {$coutParPlace} pts débités de votre compte.");
